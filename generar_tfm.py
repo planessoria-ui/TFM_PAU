@@ -12,12 +12,18 @@ títols jeràrquics, numeració de pàgina i bibliografia APA 7a.
 Aquest script construeix el document de forma reproduïble. El contingut es va
 ampliant pas a pas (PAS 2: front matter + Introducció + Marc teòric).
 """
+import os
 from docx import Document
 from docx.shared import Pt, Cm, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.enum.section import WD_SECTION
+from docx.enum.style import WD_STYLE_TYPE
+from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
+
+FIGDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "figures")
+CENTER = WD_ALIGN_PARAGRAPH.CENTER
 
 FONT = "Arial"
 
@@ -75,6 +81,8 @@ def setup_styles(doc):
         section.bottom_margin = Cm(2.5)
         section.left_margin = Cm(2.5)
         section.right_margin = Cm(2.5)
+
+    _ensure_caption_style(doc)
 
 
 def add_page_number_footer(doc):
@@ -143,6 +151,90 @@ def placeholder(doc, text):
     for run in p.runs:
         run.font.color.rgb = RGBColor(0xB0, 0x00, 0x00)
     return p
+
+
+def _ensure_caption_style(doc):
+    try:
+        st = doc.styles['Caption']
+    except KeyError:
+        st = doc.styles.add_style('Caption', WD_STYLE_TYPE.PARAGRAPH)
+    st.font.name = FONT
+    st.font.size = Pt(10)
+    st.font.italic = False
+    st.font.bold = False
+    st.font.color.rgb = RGBColor(0, 0, 0)
+    st.paragraph_format.space_before = Pt(2)
+    st.paragraph_format.space_after = Pt(10)
+    st.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+
+
+def _seq_field(paragraph, seq_name):
+    run = paragraph.add_run()
+    f1 = OxmlElement('w:fldChar'); f1.set(qn('w:fldCharType'), 'begin')
+    instr = OxmlElement('w:instrText'); instr.set(qn('xml:space'), 'preserve')
+    instr.text = f' SEQ {seq_name} \\* ARABIC '
+    f2 = OxmlElement('w:fldChar'); f2.set(qn('w:fldCharType'), 'end')
+    run._element.append(f1); run._element.append(instr); run._element.append(f2)
+    _set_run_font(run, size=10, bold=True)
+
+
+def add_figure(doc, filename, caption, source, width_cm=14.0):
+    p = doc.add_paragraph(); p.alignment = CENTER
+    p.paragraph_format.space_before = Pt(8); p.paragraph_format.space_after = Pt(2)
+    run = p.add_run()
+    run.add_picture(os.path.join(FIGDIR, filename), width=Cm(width_cm))
+    cap = doc.add_paragraph(style='Caption'); cap.alignment = CENTER
+    r1 = cap.add_run('Figura '); _set_run_font(r1, size=10, bold=True)
+    _seq_field(cap, 'Figura')
+    r2 = cap.add_run('. ' + caption + ' '); _set_run_font(r2, size=10)
+    r3 = cap.add_run('Font: ' + source); _set_run_font(r3, size=10, italic=True)
+
+
+def add_table_caption(doc, caption, source):
+    cap = doc.add_paragraph(style='Caption'); cap.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    r1 = cap.add_run('Taula '); _set_run_font(r1, size=10, bold=True)
+    _seq_field(cap, 'Taula')
+    r2 = cap.add_run('. ' + caption + ' '); _set_run_font(r2, size=10)
+    if source:
+        r3 = cap.add_run('Font: ' + source); _set_run_font(r3, size=10, italic=True)
+
+
+def add_table(doc, headers, rows, widths=None):
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.style = 'Table Grid'
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    hdr = table.rows[0].cells
+    for i, h in enumerate(headers):
+        hdr[i].paragraphs[0].alignment = CENTER
+        run = hdr[i].paragraphs[0].add_run(h)
+        _set_run_font(run, size=10.5, bold=True)
+    for row in rows:
+        cells = table.add_row().cells
+        for i, val in enumerate(row):
+            para_c = cells[i].paragraphs[0]
+            para_c.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            run = para_c.add_run(val)
+            _set_run_font(run, size=10.5)
+    if widths:
+        for i, w in enumerate(widths):
+            for row in table.rows:
+                row.cells[i].width = Cm(w)
+    doc.add_paragraph().paragraph_format.space_after = Pt(4)
+    return table
+
+
+def add_list_of(doc, seq_name):
+    p = doc.add_paragraph()
+    run = p.add_run()
+    f1 = OxmlElement('w:fldChar'); f1.set(qn('w:fldCharType'), 'begin')
+    instr = OxmlElement('w:instrText'); instr.set(qn('xml:space'), 'preserve')
+    instr.text = f' TOC \\h \\z \\c "{seq_name}" '
+    sep = OxmlElement('w:fldChar'); sep.set(qn('w:fldCharType'), 'separate')
+    t = OxmlElement('w:t')
+    t.text = "Actualitzeu els camps (clic dret → «Actualitza els camps») per generar la llista."
+    end = OxmlElement('w:fldChar'); end.set(qn('w:fldCharType'), 'end')
+    for el in (f1, instr, sep, t, end):
+        run._element.append(el)
 
 
 # ---------------------------------------------------------------------------
@@ -309,6 +401,14 @@ def build():
     add_toc(doc)
     doc.add_page_break()
 
+    # ---------------- ÍNDEX DE FIGURES I TAULES ----------------
+    heading(doc, "Índex de figures", 1)
+    add_list_of(doc, "Figura")
+    para(doc, "", space_after=12)
+    heading(doc, "Índex de taules", 1)
+    add_list_of(doc, "Taula")
+    doc.add_page_break()
+
     # ---------------- LLISTA D'ABREVIATURES ----------------
     heading(doc, "Llista d'abreviatures i símbols", 1)
     abrev = [
@@ -410,6 +510,17 @@ def build():
          "de l'ús de l'aigua i la qualitat del most, però requereix conèixer amb precisió "
          "tant la demanda hídrica com l'estat hídric de la planta (Choné et al., 2001; "
          "Bellvert et al., 2014).")
+    para(doc,
+         "El reg deficitari es defineix com l'aplicació d'aigua per sota dels requeriments "
+         "complets d'evapotranspiració del cultiu, amb l'objectiu de reduir el consum "
+         "d'aigua amb una penalització mínima —o fins i tot un benefici— sobre la qualitat "
+         "de la collita (Fereres i Soriano, 2007). En vinya, aquesta estratègia és "
+         "especialment efectiva perquè un cert nivell de dèficit hídric controlat afavoreix "
+         "l'acumulació de compostos fenòlics i la concentració del most. Tanmateix, "
+         "l'aplicació de reg deficitari de manera precisa exigeix conèixer, parcel·la a "
+         "parcel·la, tant l'evapotranspiració real del cultiu com el grau d'estrès al qual "
+         "està sotmesa la planta; és precisament aquesta necessitat la que justifica "
+         "l'aproximació metodològica d'aquest treball.")
 
     heading(doc, "2.2. L'evapotranspiració: ET0, ETc, ETa i ETp i el balanç d'energia", 2)
     para(doc,
@@ -430,7 +541,17 @@ def build():
          "(H) i el flux de calor latent (LE), aquest últim equivalent a l'energia consumida "
          "en evapotranspirar (Rn = G + H + LE). Els models de teledetecció basats en el "
          "balanç energètic estimen LE com a residu, després de calcular Rn, G i H a partir de "
-         "la temperatura de la superfície i de dades meteorològiques (Norman et al., 1995).")
+         "la temperatura de la superfície i de dades meteorològiques (Norman et al., 1995). "
+         "La Figura 1 resumeix esquemàticament aquest balanç i la partició dels fluxos entre "
+         "el sòl i la vegetació en què es basa el model emprat en aquest treball.")
+    add_figure(doc, "fig1_tseb.png",
+               "Esquema del balanç d'energia de la superfície i de la partició de fluxos "
+               "entre el sòl i el dosser en què es fonamenta el model de balanç energètic de "
+               "dues fonts (TSEB). Rn: radiació neta; G: flux de calor al sòl; H: calor "
+               "sensible; LE: calor latent (LEc del dosser i LEs del sòl); Tc i Ts: "
+               "temperatures de dosser i de sòl.",
+               "elaboració pròpia a partir de Norman et al. (1995) i Kustas i Norman (1999).",
+               width_cm=13.5)
 
     heading(doc, "2.3. Models de balanç energètic per teledetecció: TSEB i Shuttleworth–Wallace", 2)
     para(doc,
@@ -444,7 +565,11 @@ def build():
          "superfície. Aquesta capacitat de partició dels fluxos fa del TSEB l'eina de "
          "referència per estimar l'ETa en fruiters i vinya mitjançant imatges d'alta "
          "resolució de dron (Bellvert et al., 2021). La seva implementació es troba "
-         "disponible de forma oberta en el paquet pyTSEB (Nieto i Kustas).")
+         "disponible de forma oberta en el paquet pyTSEB (Nieto i Kustas). Diverses "
+         "avaluacions del model han mostrat que les estimacions combinades dels fluxos de "
+         "calor del sòl i de la vegetació s'ajusten a les observacions amb errors de l'ordre "
+         "del 20 %, fet que valida la seva aplicació en cobertes amb coberta parcial com els "
+         "cultius en files (Kustas i Norman, 1999).")
     para(doc,
          "El model de Shuttleworth–Wallace (S–W) (Shuttleworth i Wallace, 1985) estén "
          "l'equació combinada de Penman–Monteith a cobertes vegetals esparses mitjançant una "
@@ -501,7 +626,15 @@ def build():
          "basat en imatges hemisfèriques obtingudes amb una càmera d'acció de baix cost "
          "(GoPro), que reconstrueix la corba diürna de fIPAR i el seu valor integrat diari "
          "amb un elevat grau d'acord respecte del ceptòmetre. Aquest mètode operacional i "
-         "econòmic és especialment atractiu per a la seva aplicació en vinya i fruiters.")
+         "econòmic és especialment atractiu per a la seva aplicació en vinya i fruiters. La "
+         "Figura 2 il·lustra per què una única mesura al migdia pot subestimar la "
+         "interceptació diària de llum en un cultiu en files.")
+    add_figure(doc, "fig2_fipar_diurnal.png",
+               "Patró diürn de la fracció de radiació interceptada (fIPAR) en un cultiu en "
+               "files. La mesura puntual del ceptòmetre al migdia solar pot diferir del valor "
+               "diari integrat que recupera la imatge hemisfèrica al llarg del dia.",
+               "elaboració pròpia a partir de Belaid et al. (2025).",
+               width_cm=12.5)
 
     heading(doc, "2.7. La poda en vinya: efectes sobre el dosser i el consum d'aigua", 2)
     para(doc,
@@ -516,6 +649,14 @@ def build():
          "mentre que les podes més restrictives redueixin el consum d'aigua però puguin "
          "augmentar l'estrès relatiu del cep (Choné et al., 2001). Quantificar aquesta "
          "relació de manera precisa és l'objecte central d'aquest treball.")
+    para(doc,
+         "A més de l'efecte directe sobre la mida del dosser, el sistema de poda determina "
+         "la distribució espacial de la fusta i del fullatge i, per tant, la geometria de la "
+         "intercepció de la llum al llarg del dia. Aquesta dimensió temporal —difícil de "
+         "capturar amb mesures puntuals— reforça l'interès de combinar la teledetecció "
+         "instantània amb dron amb la caracterització de la corba diürna de fIPAR descrita a "
+         "l'apartat anterior, de manera que es pugui relacionar de forma robusta "
+         "l'arquitectura del dosser de cada tractament amb el seu consum real d'aigua.")
 
     heading(doc, "2.8. Estrès hídric i indicadors: CWSI i potencial hídric de tija", 2)
     para(doc,
@@ -526,7 +667,16 @@ def build():
          "pren valors propers a 0 quan el cultiu transpira sense restriccions i propers a 1 "
          "en condicions d'estrès màxim. Quan s'estima a partir d'imatges tèrmiques d'alta "
          "resolució, el CWSI s'ha correlacionat estretament amb l'estat hídric de la planta "
-         "en vinya (Bellvert et al., 2014).")
+         "en vinya (Bellvert et al., 2014). El càlcul del CWSI es recolza en dos límits de "
+         "referència de la diferència entre la temperatura del dosser i la de l'aire en "
+         "funció del dèficit de pressió de vapor, tal com es mostra a la Figura 3.")
+    add_figure(doc, "fig3_cwsi.png",
+               "Fonament del càlcul de l'índex d'estrès hídric del cultiu (CWSI) a partir de "
+               "la diferència entre la temperatura del dosser i de l'aire (Tc − Ta) i el "
+               "dèficit de pressió de vapor (VPD): límit inferior (cultiu ben regat, sense "
+               "estrès) i límit superior (dosser que no transpira).",
+               "elaboració pròpia a partir d'Idso et al. (1981) i Jackson et al. (1981).",
+               width_cm=12.5)
     para(doc,
          "La mesura de referència de l'estat hídric de la planta és el potencial hídric de "
          "tija al migdia (Ψstem), determinat amb cambra de pressió en fulles prèviament "
@@ -591,6 +741,16 @@ def build():
     # 4. MATERIALS I MÈTODES
     # =====================================================================
     heading(doc, "4. Materials i mètodes", 1)
+    para(doc,
+         "La Figura 4 resumeix el flux de treball metodològic seguit en aquest treball, des "
+         "de l'adquisició de dades amb dron i en camp fins a l'anàlisi estadística de "
+         "l'efecte dels tractaments de poda, passant pel processament d'imatges, l'aplicació "
+         "dels models d'evapotranspiració i la validació. A continuació es descriu cada "
+         "etapa en detall.")
+    add_figure(doc, "fig5_workflow.png",
+               "Esquema general del flux de treball metodològic del TFM, des de l'adquisició "
+               "de dades fins a l'anàlisi estadística.",
+               "elaboració pròpia.", width_cm=10.5)
 
     heading(doc, "4.1. Àrea d'estudi i material vegetal", 2)
     para(doc,
@@ -611,11 +771,26 @@ def build():
          "combinació tractament × bloc constitueix una parcel·la elemental amb un nombre "
          "definit de ceps de mostreig. Aquesta estructura permet controlar la variabilitat "
          "espacial del sòl dins la parcel·la i analitzar estadísticament l'efecte del "
-         "tractament.")
-    placeholder(doc, "[A CONCRETAR] Definició exacta dels tres tractaments de poda (p. ex., "
-                "poda llarga tipus Guyot, poda curta en cordó Royat i poda mínima), nombre "
-                "de gemmes deixades en cada cas, nombre de ceps per parcel·la elemental i "
-                "esquema/croquis de la distribució dels blocs a la parcel·la (Figura).")
+         "tractament. Els tres tractaments de poda previstos es descriuen a la Taula 1 i la "
+         "distribució dels blocs a la parcel·la es representa a la Figura 5.")
+    add_table_caption(doc, "Tractaments de poda de l'assaig (proposta; els valors de "
+                      "càrrega de gemmes s'han de concretar segons el protocol de l'IRTA).", "")
+    add_table(doc,
+              ["Codi", "Tractament", "Descripció", "Càrrega (gemmes/cep)"],
+              [["T1", "Poda llarga (Guyot)", "Vares llargues; major nombre de gemmes i "
+                "fullatge", "[a concretar]"],
+               ["T2", "Poda curta (cordó Royat)", "Esperons curts sobre cordó permanent; "
+                "càrrega intermèdia", "[a concretar]"],
+               ["T3", "Poda mínima", "Intervenció mínima; dosser dens però poc estructurat",
+                "[a concretar]"]],
+              widths=[1.5, 4.0, 6.5, 3.0])
+    add_figure(doc, "fig4_disseny.png",
+               "Croquis del disseny experimental en blocs complets a l'atzar amb tres "
+               "tractaments de poda (T1, T2, T3) i tres blocs.",
+               "elaboració pròpia.", width_cm=13.0)
+    placeholder(doc, "[A CONCRETAR] Definició exacta dels tractaments (confirmar sistemes i "
+                "nombre de gemmes), nombre de ceps per parcel·la elemental i dimensions/"
+                "orientació reals dels blocs a la parcel·la.")
 
     heading(doc, "4.3. Vols de dron i sensors", 2)
     para(doc,
@@ -627,7 +802,20 @@ def build():
          "l'estimació de LAI i fIPAR; i (ii) una càmera tèrmica per a l'obtenció de la "
          "temperatura de la superfície. Els vols es planificaran amb un solapament frontal i "
          "lateral elevat per garantir una bona reconstrucció fotogramètrica, i s'inclouran "
-         "panells de calibratge radiomètric i punts de control terrestre georeferenciats.")
+         "panells de calibratge radiomètric i punts de control terrestre georeferenciats. "
+         "El calendari previst de vols i de mesures de camp associades es resumeix a la "
+         "Taula 2.")
+    add_table_caption(doc, "Calendari previst de vols de dron i mesures de camp simultànies "
+                      "segons la fase fenològica de la vinya.", "")
+    add_table(doc,
+              ["Vol", "Fase fenològica", "Període aproximat", "Mesures de camp simultànies"],
+              [["1", "Brotació", "[a concretar]",
+                "fIPAR (ceptòmetre + GoPro), Ψstem, meteo"],
+               ["2", "Tancament del raïm", "[a concretar]",
+                "fIPAR (ceptòmetre + GoPro), Ψstem, meteo"],
+               ["3", "Verol", "[a concretar]",
+                "fIPAR (ceptòmetre + GoPro), Ψstem, meteo"]],
+              widths=[1.3, 4.0, 4.0, 5.7])
     placeholder(doc, "[A CONCRETAR] Model de dron i de cada càmera (fabricant, bandes "
                 "espectrals, resolució tèrmica, GSD a l'altura de vol); altura de vol i "
                 "solapaments; dates exactes dels tres vols; nombre i distribució dels punts "
@@ -698,7 +886,18 @@ def build():
          "CWSI = 1 − ETa/ETp (Idso et al., 1981; Jackson et al., 1981), que pren valors "
          "propers a 0 en absència d'estrès i propers a 1 en estrès màxim. El CWSI obtingut "
          "per teledetecció es contrastarà amb les mesures de Ψstem per avaluar-ne la "
-         "capacitat de diagnòstic de l'estat hídric (Bellvert et al., 2014).")
+         "capacitat de diagnòstic de l'estat hídric (Bellvert et al., 2014). La Taula 3 "
+         "resumeix les variables d'entrada i les sortides principals de cada model.")
+    add_table_caption(doc, "Variables d'entrada i sortides principals dels models "
+                      "d'evapotranspiració emprats.", "")
+    add_table(doc,
+              ["Model", "Entrades principals", "Sortida principal"],
+              [["TSEB", "Tc, Ts, LAI, Rn, dades meteorològiques (Ta, VPD, vent, radiació)",
+                "ETa (transpiració + evaporació)"],
+               ["Shuttleworth–Wallace", "Estructura del dosser (LAI, alçada), resistències, "
+                "dades meteorològiques", "ETp (sense restricció hídrica)"],
+               ["CWSI", "ETa i ETp", "Índex d'estrès hídric = 1 − ETa/ETp"]],
+              widths=[3.8, 7.7, 3.5])
 
     heading(doc, "4.7. Anàlisi estadística", 2)
     para(doc,
@@ -770,6 +969,13 @@ def build():
         "Choné, X., Van Leeuwen, C., Dubourdieu, D., & Gaudillère, J. P. (2001). Stem water "
         "potential is a sensitive indicator of grapevine water status. Annals of Botany, "
         "87(4), 477–483. https://doi.org/10.1006/anbo.2000.1361",
+        "Fereres, E., & Soriano, M. A. (2007). Deficit irrigation for reducing agricultural "
+        "water use. Journal of Experimental Botany, 58(2), 147–159. "
+        "https://doi.org/10.1093/jxb/erl165",
+        "Kustas, W. P., & Norman, J. M. (1999). Evaluation of soil and vegetation heat flux "
+        "predictions using a simple two-source model with radiometric temperatures for "
+        "partial canopy cover. Agricultural and Forest Meteorology, 94(1), 13–29. "
+        "https://doi.org/10.1016/S0168-1923(99)00005-2",
         "Idso, S. B., Jackson, R. D., Pinter, P. J., Reginato, R. J., & Hatfield, J. L. "
         "(1981). Normalizing the stress-degree-day parameter for environmental variability. "
         "Agricultural Meteorology, 24, 45–55. https://doi.org/10.1016/0002-1571(81)90032-7",
