@@ -535,6 +535,218 @@ def build():
          "aquest treball com a referència per validar el CWSI derivat de la teledetecció.")
 
     # =====================================================================
+    # 3. OBJECTIUS I HIPÒTESIS
+    # =====================================================================
+    heading(doc, "3. Objectius i hipòtesis", 1)
+
+    heading(doc, "3.1. Objectiu general", 2)
+    para(doc,
+         "L'objectiu general d'aquest treball és avaluar l'efecte de diferents tractaments "
+         "de poda sobre l'evapotranspiració de la vinya mitjançant teledetecció d'alta "
+         "precisió amb dron i mesures de radiació PAR en camp.")
+
+    heading(doc, "3.2. Objectius específics", 2)
+    objectius = [
+        "Estimar les variables biofísiques del dosser (LAI, fIPAR diari, alçada i volum "
+        "del dosser) per a cada tractament de poda a partir d'imatges multiespectrals i del "
+        "núvol de punts fotogramètric obtinguts en tres vols de dron al llarg del cicle "
+        "vegetatiu.",
+        "Calcular l'ETa i l'ETp de cada tractament de poda aplicant els models TSEB i "
+        "Shuttleworth–Wallace a partir de les temperatures de dosser (Tc) i de sòl (Ts) "
+        "obtingudes per imatge tèrmica d'alta resolució.",
+        "Validar les estimacions de fIPAR derivades de les imatges de dron amb mesures "
+        "simultànies de ceptòmetre i d'imatges hemisfèriques, seguint el protocol de Belaid "
+        "et al. (2025).",
+        "Quantificar l'índex d'estrès hídric del cultiu (CWSI = 1 − ETa/ETp) per a cada "
+        "tractament de poda i relacionar-lo amb mesures de potencial hídric de tija "
+        "(Ψstem).",
+    ]
+    for i, o in enumerate(objectius, 1):
+        p = doc.add_paragraph(style='List Number')
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.paragraph_format.space_after = Pt(6)
+        run = p.add_run(o)
+        _set_run_font(run, size=12)
+
+    heading(doc, "3.3. Hipòtesis", 2)
+    para(doc,
+         "A partir dels objectius anteriors i del marc teòric, es plantegen les hipòtesis "
+         "de treball següents:")
+    hipotesis = [
+        "H1. Els tractaments de poda generen diferències significatives en les variables "
+        "biofísiques del dosser (LAI, fIPAR, alçada i volum), detectables amb teledetecció "
+        "d'alta resolució amb dron.",
+        "H2. Els tractaments amb major vigor i volum de dosser presenten valors més elevats "
+        "d'ETa, en ser més gran la superfície foliar transpirant i la radiació interceptada.",
+        "H3. Les podes més restrictives augmenten el CWSI (major estrès hídric relatiu) i "
+        "es tradueixen en valors de Ψstem més negatius.",
+        "H4. La fIPAR estimada amb imatges hemisfèriques de baix cost (GoPro) presenta un "
+        "grau d'acord elevat amb la mesura de ceptòmetre i amb la derivada de les imatges de "
+        "dron, fet que en confirma l'aplicabilitat operacional en vinya.",
+    ]
+    for h in hipotesis:
+        rich(doc, [(h[:3], {'bold': True}), (h[3:], {})], align=WD_ALIGN_PARAGRAPH.JUSTIFY)
+
+    # =====================================================================
+    # 4. MATERIALS I MÈTODES
+    # =====================================================================
+    heading(doc, "4. Materials i mètodes", 1)
+
+    heading(doc, "4.1. Àrea d'estudi i material vegetal", 2)
+    para(doc,
+         "L'estudi es durà a terme en una parcel·la experimental de vinya gestionada per "
+         "l'IRTA. La parcel·la es conrea seguint les pràctiques habituals de la zona, amb un "
+         "sistema de reg localitzat per degoteig que permet aplicar tractaments de reg "
+         "controlats.")
+    placeholder(doc, "[A CONCRETAR AMB DADES DE LA FINCA] Localitat i coordenades de la "
+                "parcel·la; varietat i portaempelt; any de plantació; marc de plantació "
+                "(distància entre fileres i entre ceps); orientació de les fileres; sistema "
+                "de conducció (espatllera vertical, etc.); tipus de sòl i característiques "
+                "edafoclimàtiques; règim de reg aplicat.")
+
+    heading(doc, "4.2. Disseny experimental", 2)
+    para(doc,
+         "L'assaig s'estableix segons un disseny en blocs complets a l'atzar amb tres "
+         "tractaments de poda i tres repeticions (blocs) per tractament, de manera que cada "
+         "combinació tractament × bloc constitueix una parcel·la elemental amb un nombre "
+         "definit de ceps de mostreig. Aquesta estructura permet controlar la variabilitat "
+         "espacial del sòl dins la parcel·la i analitzar estadísticament l'efecte del "
+         "tractament.")
+    placeholder(doc, "[A CONCRETAR] Definició exacta dels tres tractaments de poda (p. ex., "
+                "poda llarga tipus Guyot, poda curta en cordó Royat i poda mínima), nombre "
+                "de gemmes deixades en cada cas, nombre de ceps per parcel·la elemental i "
+                "esquema/croquis de la distribució dels blocs a la parcel·la (Figura).")
+
+    heading(doc, "4.3. Vols de dron i sensors", 2)
+    para(doc,
+         "Es realitzaran tres vols de dron al voltant del migdia solar en tres moments del "
+         "cicle vegetatiu —brotació, tancament del raïm (proximitat a floració/quallat) i "
+         "verol— per capturar la dinàmica estacional del dosser i de l'estat hídric. El dron "
+         "anirà equipat amb dues càmeres: (i) una càmera multiespectral de sis bandes, "
+         "incloent-hi la regió del red-edge, per al càlcul d'índexs de vegetació i "
+         "l'estimació de LAI i fIPAR; i (ii) una càmera tèrmica per a l'obtenció de la "
+         "temperatura de la superfície. Els vols es planificaran amb un solapament frontal i "
+         "lateral elevat per garantir una bona reconstrucció fotogramètrica, i s'inclouran "
+         "panells de calibratge radiomètric i punts de control terrestre georeferenciats.")
+    placeholder(doc, "[A CONCRETAR] Model de dron i de cada càmera (fabricant, bandes "
+                "espectrals, resolució tèrmica, GSD a l'altura de vol); altura de vol i "
+                "solapaments; dates exactes dels tres vols; nombre i distribució dels punts "
+                "de control (GCP); programari de planificació de vol.")
+
+    heading(doc, "4.4. Processament fotogramètric i d'imatges", 2)
+    para(doc,
+         "Les imatges adquirides es processaran fotogramètricament mitjançant tècniques de "
+         "structure-from-motion per generar ortomosaics multiespectrals i tèrmics "
+         "georeferenciats, així com el model digital de superfície (DSM) i el model digital "
+         "del terreny (DTM). La diferència entre el DSM i el DTM permetrà derivar l'alçada "
+         "del dosser i, per integració, el volum de capçada de cada cep. A partir dels "
+         "ortomosaics multiespectrals es calcularan índexs de vegetació (p. ex., NDVI) i "
+         "s'estimaran el LAI i la fIPAR mitjançant relacions empíriques calibrades amb les "
+         "mesures de camp.")
+    para(doc,
+         "Per separar les fonts del balanç energètic, es realitzarà una segmentació "
+         "supervisada de la coberta que distingirà els píxels purs de vegetació dels de sòl, "
+         "obtenint així la temperatura de dosser (Tc) i la temperatura de sòl (Ts) "
+         "necessàries per als models TSEB i Shuttleworth–Wallace. Tota la cadena de "
+         "processament seguirà l'esquema descrit per Bellvert et al. (2021) per a cultius "
+         "llenyosos amb imatges de dron.")
+    placeholder(doc, "[A CONCRETAR] Programari fotogramètric utilitzat (p. ex., Agisoft "
+                "Metashape o Pix4D); resolució dels ortomosaics; mètode i índexs concrets "
+                "per estimar LAI i fIPAR i la seva calibració; criteri de segmentació "
+                "vegetació/sòl.")
+
+    heading(doc, "4.5. Mesures de camp i validació", 2)
+    para(doc,
+         "Simultàniament a cada vol es prendran mesures de camp per parametritzar i validar "
+         "els models:")
+    camp = [
+        "fIPAR: mesura al migdia solar i corba diürna amb ceptòmetre lineal (AccuPAR LP-80) "
+        "i, en paral·lel, amb imatges hemisfèriques obtingudes amb una càmera d'acció "
+        "(GoPro), seguint el protocol de Belaid et al. (2025). Aquestes dades serviran per "
+        "validar la fIPAR derivada del dron.",
+        "Potencial hídric de tija (Ψstem): determinat al migdia amb cambra de pressió "
+        "(Scholander) en fulles prèviament embolcallades amb bossa opaca i reflectora, com a "
+        "mesura de referència de l'estat hídric (Choné et al., 2001).",
+        "Variables meteorològiques: temperatura de l'aire, humitat relativa, dèficit de "
+        "pressió de vapor (VPD), velocitat del vent i radiació solar, obtingudes de "
+        "l'estació agrometeorològica més propera de la Xarxa Agrometeorològica de Catalunya "
+        "(XAC), necessàries com a entrades dels models de balanç energètic.",
+    ]
+    for c in camp:
+        p = doc.add_paragraph(style='List Bullet')
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p.paragraph_format.space_after = Pt(6)
+        run = p.add_run(c)
+        _set_run_font(run, size=12)
+    placeholder(doc, "[A CONCRETAR] Nombre de ceps mostrejats per tractament i bloc en cada "
+                "mesura; hores exactes de les corbes diürnes; model de cambra de pressió; "
+                "identificador i distància de l'estació XAC utilitzada.")
+
+    heading(doc, "4.6. Models d'evapotranspiració i càlcul del CWSI", 2)
+    para(doc,
+         "L'evapotranspiració real (ETa) de cada tractament es calcularà amb el model de "
+         "balanç energètic de dues fonts (TSEB; Norman et al., 1995), que estima els fluxos "
+         "de calor latent del dosser i del sòl per separat a partir de Tc, Ts, el LAI i les "
+         "dades meteorològiques. La implementació es farà amb el paquet obert pyTSEB (Nieto "
+         "i Kustas), tal com s'ha aplicat en fruiters amb imatges de dron (Bellvert et al., "
+         "2021). L'evapotranspiració potencial (ETp) s'estimarà amb el model de "
+         "Shuttleworth–Wallace (Shuttleworth i Wallace, 1985), que descriu l'ET d'una "
+         "coberta esparsa en condicions sense restricció hídrica a partir de l'estructura "
+         "real del dosser.")
+    para(doc,
+         "A partir d'ambdues estimacions, l'índex d'estrès hídric del cultiu es definirà com "
+         "CWSI = 1 − ETa/ETp (Idso et al., 1981; Jackson et al., 1981), que pren valors "
+         "propers a 0 en absència d'estrès i propers a 1 en estrès màxim. El CWSI obtingut "
+         "per teledetecció es contrastarà amb les mesures de Ψstem per avaluar-ne la "
+         "capacitat de diagnòstic de l'estat hídric (Bellvert et al., 2014).")
+
+    heading(doc, "4.7. Anàlisi estadística", 2)
+    para(doc,
+         "L'efecte dels tractaments de poda sobre les variables biofísiques del dosser "
+         "(LAI, fIPAR, alçada, volum), sobre l'ETa, l'ETp i el CWSI, i sobre el Ψstem "
+         "s'analitzarà mitjançant una anàlisi de la variància (ANOVA) considerant els "
+         "factors tractament, data i bloc. Quan l'ANOVA detecti diferències significatives, "
+         "la separació de mitjanes es farà amb el test HSD de Tukey (p < 0,05), seguint el "
+         "mateix enfocament aplicat en estudis equivalents en fruiters (Bellvert et al., "
+         "2021). La concordança entre els mètodes de mesura de la fIPAR (dron, ceptòmetre i "
+         "imatge hemisfèrica) i entre el CWSI i el Ψstem s'avaluarà amb regressió lineal i "
+         "estadístics de bondat d'ajust (coeficient de determinació R², error quadràtic mitjà "
+         "RMSE i biaix). Es comprovaran prèviament els supòsits de normalitat dels residus i "
+         "d'homogeneïtat de variàncies.")
+    placeholder(doc, "[A CONCRETAR] Programari estadístic utilitzat (p. ex., R o JMP) i "
+                "nivell de significació adoptat si difereix de 0,05.")
+
+    # =====================================================================
+    # 5–7. RESULTATS, DISCUSSIÓ I CONCLUSIONS (esquelet per omplir)
+    # =====================================================================
+    heading(doc, "5. Resultats", 1)
+    placeholder(doc, "[CAPÍTOL A OMPLIR AMB LES DADES EXPERIMENTALS REALS] Estructura "
+                "proposada (afegiu taules i figures a cada apartat):")
+    heading(doc, "5.1. Variables biofísiques del dosser per tractament de poda", 2)
+    placeholder(doc, "Taules/figures de LAI, fIPAR, alçada i volum per tractament i data; "
+                "resultats de l'ANOVA i lletres de separació de mitjanes (Tukey).")
+    heading(doc, "5.2. Validació de la fIPAR (dron vs. ceptòmetre vs. imatge hemisfèrica)", 2)
+    placeholder(doc, "Regressions i estadístics (R², RMSE, biaix) entre els tres mètodes; "
+                "corbes diürnes de fIPAR.")
+    heading(doc, "5.3. Evapotranspiració (ETa i ETp) per tractament de poda", 2)
+    placeholder(doc, "Valors d'ETa i ETp estimats amb TSEB i S–W per tractament i data; "
+                "partició transpiració/evaporació; resultats de l'ANOVA.")
+    heading(doc, "5.4. Índex d'estrès hídric (CWSI) i relació amb el Ψstem", 2)
+    placeholder(doc, "CWSI per tractament; regressió CWSI–Ψstem; mapes d'estrès hídric.")
+
+    heading(doc, "6. Discussió", 1)
+    placeholder(doc, "[CAPÍTOL A OMPLIR] Interpreteu els resultats a la llum de la literatura "
+                "(Bellvert et al., 2014, 2021; Belaid et al., 2025; Choné et al., 2001). "
+                "Discutiu: (i) com la poda modifica el dosser i l'ET; (ii) la fiabilitat de "
+                "la fIPAR per imatge hemisfèrica respecte del ceptòmetre; (iii) la coherència "
+                "entre CWSI i Ψstem; (iv) limitacions i implicacions per al reg de precisió.")
+
+    heading(doc, "7. Conclusions", 1)
+    placeholder(doc, "[CAPÍTOL A OMPLIR] Conclusions numerades que responguin directament als "
+                "objectius i contrastin les hipòtesis H1–H4, més una conclusió pràctica sobre "
+                "quina estratègia de poda optimitza l'ús de l'aigua en vinya.")
+
+    # =====================================================================
     # 8. REFERÈNCIES (sembra; s'ampliarà)
     # =====================================================================
     heading(doc, "8. Referències bibliogràfiques", 1)
