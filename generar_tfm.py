@@ -283,12 +283,12 @@ def build():
         ("Titulació", "Màster en Enginyeria Agronòmica interuniversitari (MENAG-i)"),
         ("Centre", "Escola Tècnica Superior d'Enginyeria Agroalimentària i Forestal i de "
                    "Veterinària (ETSEAFiV), Universitat de Lleida"),
-        ("Paraules clau", "vinya; evapotranspiració; teledetecció; dron; radiació PAR; "
-                          "poda; estrès hídric; reg de precisió"),
-        ("Palabras clave", "viña; evapotranspiración; teledetección; dron; radiación PAR; "
-                           "poda; estrés hídrico; riego de precisión"),
-        ("Key words", "vineyard; evapotranspiration; remote sensing; UAV; PAR radiation; "
-                      "pruning; water stress; precision irrigation"),
+        ("Paraules clau", "vinya; Tempranillo; evapotranspiració; teledetecció; dron; radiació PAR; "
+                          "maneig de capçada; estrès hídric; reg de precisió"),
+        ("Palabras clave", "viña; Tempranillo; evapotranspiración; teledetección; dron; radiación PAR; "
+                           "manejo de copa; estrés hídrico; riego de precisión"),
+        ("Key words", "vineyard; Tempranillo; evapotranspiration; remote sensing; UAV; PAR radiation; "
+                      "canopy management; water stress; precision irrigation"),
     ]
     for k, v in dades:
         rich(doc, [(k + ": ", {'bold': True}), (v, {})], align=WD_ALIGN_PARAGRAPH.LEFT)
@@ -318,9 +318,10 @@ def build():
          "Aquest Treball Final de Màster, desenvolupat en col·laboració amb l'IRTA, té "
          "com a objectiu avaluar l'efecte de diferents tractaments de poda sobre "
          "l'evapotranspiració de la vinya combinant teledetecció d'alta precisió amb dron "
-         "i mesures de radiació PAR en camp. En una parcel·la experimental amb un disseny "
-         "en blocs a l'atzar i tres tractaments de poda, es realitzaran tres vols de dron "
-         "al llarg del cicle vegetatiu amb càmeres tèrmica i multiespectral. A partir de "
+         "i mesures de radiació PAR en camp. En una parcel·la experimental de la varietat "
+         "'Ull de Llebre' (Tempranillo) a Raimat, amb un disseny en blocs de cinc "
+         "tractaments de maneig de capçada i quatre repeticions, es realitzaran tres vols de "
+         "dron al llarg del cicle vegetatiu amb càmeres tèrmica i multiespectral. A partir de "
          "les imatges es derivaran les variables biofísiques del dosser (LAI, fIPAR, "
          "alçada i volum) i les temperatures de dosser i de sòl, que alimentaran els "
          "models de balanç energètic de dues fonts (TSEB) i de Shuttleworth–Wallace per "
@@ -350,9 +351,10 @@ def build():
          "Este Trabajo Final de Máster, desarrollado en colaboración con el IRTA, tiene "
          "como objetivo evaluar el efecto de diferentes tratamientos de poda sobre la "
          "evapotranspiración de la viña combinando teledetección de alta precisión con dron "
-         "y medidas de radiación PAR en campo. En una parcela experimental con un diseño en "
-         "bloques al azar y tres tratamientos de poda, se realizarán tres vuelos de dron a "
-         "lo largo del ciclo vegetativo con cámaras térmica y multiespectral. A partir de "
+         "y medidas de radiación PAR en campo. En una parcela experimental de la variedad "
+         "'Tempranillo' en Raimat, con un diseño en bloques de cinco tratamientos de manejo "
+         "de copa y cuatro repeticiones, se realizarán tres vuelos de dron a lo largo del "
+         "ciclo vegetativo con cámaras térmica y multiespectral. A partir de "
          "las imágenes se derivarán las variables biofísicas del dosel (LAI, fIPAR, altura "
          "y volumen) y las temperaturas de dosel y de suelo, que alimentarán los modelos de "
          "balance energético de dos fuentes (TSEB) y de Shuttleworth–Wallace para estimar la "
@@ -381,7 +383,8 @@ def build():
          "This Master's Thesis, carried out in collaboration with IRTA, aims to assess the "
          "effect of different pruning treatments on vineyard evapotranspiration by combining "
          "high-resolution UAV remote sensing and field PAR measurements. In an experimental "
-         "plot with a randomised block design and three pruning treatments, three UAV "
+         "'Tempranillo' plot in Raimat, with a block design of five canopy-management "
+         "treatments and four replicates, three UAV "
          "flights will be performed over the growing season with thermal and multispectral "
          "cameras. Canopy biophysical variables (LAI, fIPAR, height and volume) and canopy "
          "and soil temperatures will be derived from the imagery and used to drive the "
@@ -478,6 +481,19 @@ def build():
          "com a alternativa pràctica al ceptòmetre tradicional (Belaid et al., 2025). Aquest "
          "treball, desenvolupat en col·laboració amb l'IRTA, integra ambdós enfocaments per "
          "estudiar com els tractaments de poda modifiquen l'ET de la vinya.")
+    para(doc,
+         "Concretament, el treball s'emmarca en l'assaig de maneig de capçada que el Programa "
+         "d'Ús Eficient de l'Aigua de l'IRTA desenvolupa en una parcel·la de la varietat "
+         "'Ull de Llebre' (Tempranillo) a Raimat, dins dels projectes VITIMPACT i ADAPTEX, "
+         "amb l'objectiu d'augmentar la resiliència de la vinya davant del canvi climàtic. En "
+         "aquest assaig, cinc nivells d'esporga generen capçades de mides contrastades i, en "
+         "campanyes anteriors, s'han observat diferències notables en el consum d'aigua de "
+         "reg entre tractaments —les capçades més grans han arribat a consumir fins a un 14 % "
+         "més d'aigua que el maneig comercial, mentre que l'esporga severa l'ha reduït prop "
+         "d'un 20 %. El present TFM aborda precisament una de les línies de treball futures "
+         "previstes en aquest assaig: la quantificació de la transpiració i de "
+         "l'evapotranspiració mitjançant teledetecció, com a complement a les mesures "
+         "directes de flux de saba i de potencial hídric.")
 
     heading(doc, "1.2. Estructura del treball", 2)
     para(doc,
@@ -723,13 +739,16 @@ def build():
          "A partir dels objectius anteriors i del marc teòric, es plantegen les hipòtesis "
          "de treball següents:")
     hipotesis = [
-        "H1. Els tractaments de poda generen diferències significatives en les variables "
-        "biofísiques del dosser (LAI, fIPAR, alçada i volum), detectables amb teledetecció "
-        "d'alta resolució amb dron.",
-        "H2. Els tractaments amb major vigor i volum de dosser presenten valors més elevats "
-        "d'ETa, en ser més gran la superfície foliar transpirant i la radiació interceptada.",
-        "H3. Les podes més restrictives augmenten el CWSI (major estrès hídric relatiu) i "
-        "es tradueixen en valors de Ψstem més negatius.",
+        "H1. Els cinc tractaments de maneig de capçada generen diferències significatives en "
+        "les variables biofísiques del dosser (LAI, fIPAR, alçada i volum), detectables amb "
+        "teledetecció d'alta resolució amb dron.",
+        "H2. Els tractaments amb major mida de capçada (SE, sense esporga) presenten valors "
+        "més elevats d'ETa, mentre que els d'esporga severa (ES i ES+DV) en presenten de més "
+        "baixos, en consonància amb les diferències de consum d'aigua de reg observades en "
+        "campanyes anteriors de l'assaig.",
+        "H3. En mantenir-se un mateix estat hídric entre tractaments mitjançant reg "
+        "individualitzat, les diferències d'ETa i de CWSI s'expliquen principalment per "
+        "l'arquitectura del dosser i no per diferències de Ψstem imposades.",
         "H4. La fIPAR estimada amb imatges hemisfèriques de baix cost (GoPro) presenta un "
         "grau d'acord elevat amb la mesura de ceptòmetre i amb la derivada de les imatges de "
         "dron, fet que en confirma l'aplicabilitat operacional en vinya.",
@@ -754,43 +773,58 @@ def build():
 
     heading(doc, "4.1. Àrea d'estudi i material vegetal", 2)
     para(doc,
-         "L'estudi es durà a terme en una parcel·la experimental de vinya gestionada per "
-         "l'IRTA. La parcel·la es conrea seguint les pràctiques habituals de la zona, amb un "
-         "sistema de reg localitzat per degoteig que permet aplicar tractaments de reg "
-         "controlats.")
-    placeholder(doc, "[A CONCRETAR AMB DADES DE LA FINCA] Localitat i coordenades de la "
-                "parcel·la; varietat i portaempelt; any de plantació; marc de plantació "
-                "(distància entre fileres i entre ceps); orientació de les fileres; sistema "
-                "de conducció (espatllera vertical, etc.); tipus de sòl i característiques "
-                "edafoclimàtiques; règim de reg aplicat.")
+         "L'estudi s'emmarca en l'assaig de maneig de capçada de la vinya que el Programa "
+         "d'Ús Eficient de l'Aigua de l'IRTA desenvolupa en el marc dels projectes VITIMPACT "
+         "i ADAPTEX, orientat a augmentar la resiliència del cultiu davant del canvi "
+         "climàtic. La parcel·la experimental se situa a Raimat (comarca del Segrià, Lleida) "
+         "i està plantada amb la varietat 'Ull de Llebre' (Tempranillo) empeltada sobre el "
+         "portaempelt Richter 110 (R-110).")
+    para(doc,
+         "La vinya, plantada l'any 2013, es condueix en doble cordó amb un marc de plantació "
+         "d'1,6 m entre ceps i 2,5 m entre fileres. El reg s'aplica per degoteig seguint una "
+         "estratègia de reg deficitari controlat (RDC), amb imposició del dèficit en el "
+         "període post-verolat fins a la verema. Un aspecte clau del disseny és que cada "
+         "tractament de maneig de capçada es rega de manera individualitzada per mantenir "
+         "tots els tractaments en un mateix estat hídric, independentment de la mida de la "
+         "capçada; d'aquesta manera, les diferències observades es poden atribuir a "
+         "l'arquitectura del dosser i no a diferències d'estat hídric imposades. El potencial "
+         "hídric de tija al migdia s'utilitza com a indicador de referència per controlar "
+         "aquest estat hídric (Choné et al., 2001).")
+    placeholder(doc, "[VERIFICAR/COMPLETAR] Coordenades exactes de la parcel·la, tipus de sòl "
+                "i dades climàtiques de la campanya (p. ex., precipitació acumulada; el 2024-25 "
+                "va ser de ~330 mm), i dotacions de reg reals d'aquesta temporada.")
 
     heading(doc, "4.2. Disseny experimental", 2)
     para(doc,
-         "L'assaig s'estableix segons un disseny en blocs complets a l'atzar amb tres "
-         "tractaments de poda i tres repeticions (blocs) per tractament, de manera que cada "
-         "combinació tractament × bloc constitueix una parcel·la elemental amb un nombre "
-         "definit de ceps de mostreig. Aquesta estructura permet controlar la variabilitat "
-         "espacial del sòl dins la parcel·la i analitzar estadísticament l'efecte del "
-         "tractament. Els tres tractaments de poda previstos es descriuen a la Taula 1 i la "
-         "distribució dels blocs a la parcel·la es representa a la Figura 5.")
-    add_table_caption(doc, "Tractaments de poda de l'assaig (proposta; els valors de "
-                      "càrrega de gemmes s'han de concretar segons el protocol de l'IRTA).", "")
+         "L'assaig segueix un disseny en blocs amb cinc tractaments de maneig de capçada "
+         "(esporga) i quatre repeticions (blocs) per tractament, fet que dona lloc a 20 "
+         "parcel·les experimentals. Cada parcel·la elemental està formada per 24 ceps "
+         "distribuïts en tres fileres de vuit ceps, dels quals es prenen com a ceps de "
+         "mostreig els centrals per minimitzar els efectes de vora. Els cinc tractaments es "
+         "descriuen a la Taula 1 i la distribució dels blocs a la parcel·la es representa a "
+         "la Figura 5.")
+    add_table_caption(doc, "Tractaments de maneig de capçada (esporga) de l'assaig ADAPTEX. "
+                      "El tractament EM (esporga mitjana) correspon a la pràctica comercial "
+                      "de referència.", "")
     add_table(doc,
-              ["Codi", "Tractament", "Descripció", "Càrrega (gemmes/cep)"],
-              [["T1", "Poda llarga (Guyot)", "Vares llargues; major nombre de gemmes i "
-                "fullatge", "[a concretar]"],
-               ["T2", "Poda curta (cordó Royat)", "Esperons curts sobre cordó permanent; "
-                "càrrega intermèdia", "[a concretar]"],
-               ["T3", "Poda mínima", "Intervenció mínima; dosser dens però poc estructurat",
-                "[a concretar]"]],
-              widths=[1.5, 4.0, 6.5, 3.0])
+              ["Codi", "Tractament", "Descripció"],
+              [["SE", "Sense esporga",
+                "No s'elimina vegetació; capçada de mida màxima"],
+               ["EL", "Esporga lleugera",
+                "Reducció lleugera de la capçada"],
+               ["EM", "Esporga mitjana (comercial)",
+                "Maneig comercial de referència; capçada intermèdia"],
+               ["ES", "Esporga severa",
+                "Reducció intensa de la capçada; mida mínima"],
+               ["ES+DV", "Esporga severa + desfullat a verolat",
+                "Esporga severa amb desfullat addicional en verolat"]],
+              widths=[1.6, 4.6, 6.8])
     add_figure(doc, "fig4_disseny.png",
-               "Croquis del disseny experimental en blocs complets a l'atzar amb tres "
-               "tractaments de poda (T1, T2, T3) i tres blocs.",
-               "elaboració pròpia.", width_cm=13.0)
-    placeholder(doc, "[A CONCRETAR] Definició exacta dels tractaments (confirmar sistemes i "
-                "nombre de gemmes), nombre de ceps per parcel·la elemental i dimensions/"
-                "orientació reals dels blocs a la parcel·la.")
+               "Croquis del disseny experimental de l'assaig ADAPTEX: cinc tractaments de "
+               "maneig de capçada (SE, EL, EM, ES, ES+DV) × quatre blocs = 20 parcel·les "
+               "experimentals de 24 ceps cadascuna.",
+               "elaboració pròpia a partir del croquis de l'assaig ADAPTEX (IRTA).",
+               width_cm=13.5)
 
     heading(doc, "4.3. Vols de dron i sensors", 2)
     para(doc,
@@ -901,17 +935,18 @@ def build():
 
     heading(doc, "4.7. Anàlisi estadística", 2)
     para(doc,
-         "L'efecte dels tractaments de poda sobre les variables biofísiques del dosser "
-         "(LAI, fIPAR, alçada, volum), sobre l'ETa, l'ETp i el CWSI, i sobre el Ψstem "
-         "s'analitzarà mitjançant una anàlisi de la variància (ANOVA) considerant els "
-         "factors tractament, data i bloc. Quan l'ANOVA detecti diferències significatives, "
-         "la separació de mitjanes es farà amb el test HSD de Tukey (p < 0,05), seguint el "
-         "mateix enfocament aplicat en estudis equivalents en fruiters (Bellvert et al., "
-         "2021). La concordança entre els mètodes de mesura de la fIPAR (dron, ceptòmetre i "
-         "imatge hemisfèrica) i entre el CWSI i el Ψstem s'avaluarà amb regressió lineal i "
-         "estadístics de bondat d'ajust (coeficient de determinació R², error quadràtic mitjà "
-         "RMSE i biaix). Es comprovaran prèviament els supòsits de normalitat dels residus i "
-         "d'homogeneïtat de variàncies.")
+         "L'efecte dels tractaments de maneig de capçada sobre les variables biofísiques del "
+         "dosser (LAI, fIPAR, alçada, volum), sobre l'ETa, l'ETp i el CWSI, i sobre el Ψstem "
+         "s'analitzarà comparant els cinc tractaments en cada data de mesura. Quan es "
+         "compleixin els supòsits de normalitat dels residus i d'homogeneïtat de variàncies, "
+         "s'aplicarà una anàlisi de la variància (ANOVA) amb separació de mitjanes mitjançant "
+         "el test HSD de Tukey (p < 0,05), tal com s'ha fet en estudis equivalents en "
+         "fruiters (Bellvert et al., 2021). En cas que aquests supòsits no es compleixin, "
+         "s'utilitzarà l'alternativa no paramètrica de Kruskal–Wallis, criteri adoptat de "
+         "manera consistent amb l'anàlisi de l'assaig ADAPTEX a l'IRTA. La concordança entre "
+         "els mètodes de mesura de la fIPAR (dron, ceptòmetre i imatge hemisfèrica) i entre "
+         "el CWSI i el Ψstem s'avaluarà amb regressió lineal i estadístics de bondat d'ajust "
+         "(coeficient de determinació R², error quadràtic mitjà RMSE i biaix).")
     placeholder(doc, "[A CONCRETAR] Programari estadístic utilitzat (p. ex., R o JMP) i "
                 "nivell de significació adoptat si difereix de 0,05.")
 
@@ -921,24 +956,32 @@ def build():
     heading(doc, "5. Resultats", 1)
     placeholder(doc, "[CAPÍTOL A OMPLIR AMB LES DADES EXPERIMENTALS REALS] Estructura "
                 "proposada (afegiu taules i figures a cada apartat):")
-    heading(doc, "5.1. Variables biofísiques del dosser per tractament de poda", 2)
-    placeholder(doc, "Taules/figures de LAI, fIPAR, alçada i volum per tractament i data; "
-                "resultats de l'ANOVA i lletres de separació de mitjanes (Tukey).")
+    heading(doc, "5.1. Variables biofísiques del dosser per tractament de capçada", 2)
+    placeholder(doc, "Taules/figures de LAI, fIPAR, alçada i volum del dosser per als cinc "
+                "tractaments (SE, EL, EM, ES, ES+DV) i les tres dates; resultats del test "
+                "(ANOVA + Tukey o Kruskal–Wallis) amb lletres de separació de mitjanes.")
     heading(doc, "5.2. Validació de la fIPAR (dron vs. ceptòmetre vs. imatge hemisfèrica)", 2)
     placeholder(doc, "Regressions i estadístics (R², RMSE, biaix) entre els tres mètodes; "
-                "corbes diürnes de fIPAR.")
-    heading(doc, "5.3. Evapotranspiració (ETa i ETp) per tractament de poda", 2)
+                "corbes diürnes de fIPAR per tractament.")
+    heading(doc, "5.3. Evapotranspiració (ETa i ETp) per tractament de capçada", 2)
     placeholder(doc, "Valors d'ETa i ETp estimats amb TSEB i S–W per tractament i data; "
-                "partició transpiració/evaporació; resultats de l'ANOVA.")
+                "partició transpiració/evaporació; comparació amb l'aigua de reg aplicada i, "
+                "si escau, amb les mesures de flux de saba (cabalímetres) de l'assaig.")
     heading(doc, "5.4. Índex d'estrès hídric (CWSI) i relació amb el Ψstem", 2)
-    placeholder(doc, "CWSI per tractament; regressió CWSI–Ψstem; mapes d'estrès hídric.")
+    placeholder(doc, "CWSI per tractament; regressió CWSI–Ψstem; mapes d'estrès hídric. "
+                "Atès que el reg manté un mateix estat hídric entre tractaments, valoreu fins "
+                "a quin punt el CWSI reflecteix l'arquitectura del dosser més que no pas "
+                "l'estrès imposat.")
 
     heading(doc, "6. Discussió", 1)
     placeholder(doc, "[CAPÍTOL A OMPLIR] Interpreteu els resultats a la llum de la literatura "
-                "(Bellvert et al., 2014, 2021; Belaid et al., 2025; Choné et al., 2001). "
-                "Discutiu: (i) com la poda modifica el dosser i l'ET; (ii) la fiabilitat de "
-                "la fIPAR per imatge hemisfèrica respecte del ceptòmetre; (iii) la coherència "
-                "entre CWSI i Ψstem; (iv) limitacions i implicacions per al reg de precisió.")
+                "(Bellvert et al., 2014, 2021; Belaid et al., 2025; Choné et al., 2001) i de "
+                "les dades de l'assaig ADAPTEX (Blanco et al., 2025). Discutiu: (i) com el "
+                "maneig de capçada modifica el dosser i l'ET; (ii) la coherència de l'ETa "
+                "estimada amb el consum d'aigua de reg observat i amb el flux de saba; "
+                "(iii) la fiabilitat de la fIPAR per imatge hemisfèrica respecte del "
+                "ceptòmetre; (iv) la relació CWSI–Ψstem; (v) limitacions i implicacions per "
+                "al reg de precisió.")
 
     heading(doc, "7. Conclusions", 1)
     placeholder(doc, "[CAPÍTOL A OMPLIR] Conclusions numerades que responguin directament als "
@@ -958,6 +1001,10 @@ def build():
         "canopy light interception: A ceptometer alternative for precision irrigation in "
         "orchards and vineyards. Agricultural and Forest Meteorology, 377, 110958. "
         "https://doi.org/10.1016/j.agrformet.2025.110958",
+        "Blanco, V., Gutiérrez, N., Mata, M., Paris, C., Biru, A., & Girona, J. (2025). "
+        "Maneig de capçada com a estratègia per augmentar la resiliència de la vinya enfront "
+        "del canvi climàtic: Resultats temporada 2025 [Comunicació interna]. IRTA – Programa "
+        "d'Ús Eficient de l'Aigua en Agricultura.",
         "Bellvert, J., Nieto, H., Pelechá, A., Jofre-Čekalović, C., Zazurca, L., & "
         "Miarnau, X. (2021). Remote sensing energy balance model for the assessment of crop "
         "evapotranspiration and water status in an almond rootstock collection. Frontiers in "

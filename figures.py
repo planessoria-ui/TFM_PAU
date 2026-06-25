@@ -120,25 +120,37 @@ def fig3_cwsi():
 
 
 def fig4_disseny():
-    fig, ax = plt.subplots(figsize=(7.0, 3.6))
-    ax.set_xlim(0, 9.6); ax.set_ylim(0, 4.2); ax.axis('off')
-    cols = {'T1': '#2e7d32', 'T2': '#1f6fb2', 'T3': '#e08a1e'}
-    # 3 blocs (files), cada bloc amb els 3 tractaments en ordre aleatori
-    blocs = [['T1', 'T3', 'T2'], ['T2', 'T1', 'T3'], ['T3', 'T2', 'T1']]
-    for bi, bloc in enumerate(blocs):
-        y = 3.0 - bi * 1.05
-        ax.text(0.1, y + 0.35, f'Bloc {bi+1}', fontsize=10, weight='bold')
-        for ti, t in enumerate(bloc):
-            x = 1.6 + ti * 2.5
-            ax.add_patch(FancyBboxPatch((x, y), 2.2, 0.8,
-                         boxstyle="round,pad=0.02", fc=cols[t], ec='black', alpha=0.85))
-            ax.text(x + 1.1, y + 0.4, t, ha='center', va='center',
-                    color='white', weight='bold')
-    handles = [mpatches.Patch(color=cols['T1'], label='T1 – Poda llarga (Guyot)'),
-               mpatches.Patch(color=cols['T2'], label='T2 – Poda curta (cordó Royat)'),
-               mpatches.Patch(color=cols['T3'], label='T3 – Poda mínima')]
-    ax.legend(handles=handles, loc='lower center', ncol=3, fontsize=8.5,
-              bbox_to_anchor=(0.5, -0.12), frameon=False)
+    fig, ax = plt.subplots(figsize=(7.6, 4.4))
+    ax.set_xlim(0, 11.5); ax.set_ylim(0, 6.6); ax.axis('off')
+    # 5 tractaments (franges horitzontals) x 4 blocs (columnes), segons croquis ADAPTEX
+    tracts = [
+        ('SE',    'Sense esporga',                       '#6666ff'),
+        ('EL',    'Esporga lleugera',                    '#ffc000'),
+        ('EM',    'Esporga mitjana (comercial)',         '#a40079'),
+        ('ES',    'Esporga severa',                      '#5b9bd5'),
+        ('ES+DV', 'Esporga severa + desfullat a verolat','#92d050'),
+    ]
+    ax.text(5.75, 6.3, "Assaig ADAPTEX – Ull de Llebre (Tempranillo), Raimat",
+            ha='center', fontsize=10.5, weight='bold')
+    ax.text(5.75, 5.95, "5 tractaments × 4 blocs = 20 parcel·les (24 ceps/parcel·la)",
+            ha='center', fontsize=9, style='italic', color='dimgray')
+    # capçaleres de bloc
+    for b in range(4):
+        ax.text(3.0 + b * 2.0, 5.55, f'Bloc {b+1}', ha='center', fontsize=9, weight='bold')
+    for ti, (code, name, color) in enumerate(tracts):
+        y = 4.6 - ti * 0.95
+        ax.text(2.05, y + 0.3, f'{code}', ha='right', va='center', fontsize=9.5,
+                weight='bold')
+        for b in range(4):
+            x = 2.1 + b * 2.0
+            ax.add_patch(FancyBboxPatch((x, y), 1.8, 0.6, boxstyle="round,pad=0.02",
+                         fc=color, ec='black', alpha=0.85))
+            ax.text(x + 0.9, y + 0.3, code, ha='center', va='center',
+                    color='white', fontsize=8, weight='bold')
+    handles = [mpatches.Patch(color=c, label=f'{code} – {name}')
+               for code, name, c in tracts]
+    ax.legend(handles=handles, loc='lower center', ncol=2, fontsize=8,
+              bbox_to_anchor=(0.5, -0.16), frameon=False)
     fig.tight_layout()
     fig.savefig(os.path.join(OUT, 'fig4_disseny.png'), dpi=DPI, bbox_inches='tight')
     plt.close(fig)
