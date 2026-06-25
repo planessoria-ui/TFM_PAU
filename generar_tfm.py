@@ -493,7 +493,8 @@ def build():
          "d'un 20 %. El present TFM aborda precisament una de les línies de treball futures "
          "previstes en aquest assaig: la quantificació de la transpiració i de "
          "l'evapotranspiració mitjançant teledetecció, com a complement a les mesures "
-         "directes de flux de saba i de potencial hídric.")
+         "directes de transpiració amb sensors de flux de saba (sap flow sensors) i al "
+         "seguiment del potencial hídric de tija.")
 
     heading(doc, "1.2. Estructura del treball", 2)
     para(doc,
@@ -965,8 +966,9 @@ def build():
                 "corbes diürnes de fIPAR per tractament.")
     heading(doc, "5.3. Evapotranspiració (ETa i ETp) per tractament de capçada", 2)
     placeholder(doc, "Valors d'ETa i ETp estimats amb TSEB i S–W per tractament i data; "
-                "partició transpiració/evaporació; comparació amb l'aigua de reg aplicada i, "
-                "si escau, amb les mesures de flux de saba (cabalímetres) de l'assaig.")
+                "partició transpiració/evaporació; comparació amb la transpiració mesurada "
+                "amb sensors de flux de saba (sap flow sensors) i amb l'aigua de reg aplicada "
+                "(registrada amb cabalímetres) de l'assaig.")
     heading(doc, "5.4. Índex d'estrès hídric (CWSI) i relació amb el Ψstem", 2)
     placeholder(doc, "CWSI per tractament; regressió CWSI–Ψstem; mapes d'estrès hídric. "
                 "Atès que el reg manté un mateix estat hídric entre tractaments, valoreu fins "
@@ -978,7 +980,8 @@ def build():
                 "(Bellvert et al., 2014, 2021; Belaid et al., 2025; Choné et al., 2001) i de "
                 "les dades de l'assaig ADAPTEX (Blanco et al., 2025). Discutiu: (i) com el "
                 "maneig de capçada modifica el dosser i l'ET; (ii) la coherència de l'ETa "
-                "estimada amb el consum d'aigua de reg observat i amb el flux de saba; "
+                "estimada amb el consum d'aigua de reg observat i amb la transpiració dels "
+                "sensors de flux de saba (sap flow); "
                 "(iii) la fiabilitat de la fIPAR per imatge hemisfèrica respecte del "
                 "ceptòmetre; (iv) la relació CWSI–Ψstem; (v) limitacions i implicacions per "
                 "al reg de precisió.")
