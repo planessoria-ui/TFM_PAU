@@ -297,9 +297,11 @@ def build():
     # ---------------- AGRAÏMENTS ----------------
     heading(doc, "Agraïments", 1)
     para(doc,
-         "La realització d'aquest Treball Final de Màster no hauria estat possible sense "
-         "l'ajuda, la dedicació i el suport de moltes persones i institucions, a les quals "
-         "voldria expressar el meu més sincer agraïment.")
+         "Darrere d'aquest Treball Final de Màster hi ha molt més que hores de camp i "
+         "d'anàlisi: hi ha totes les persones que, d'una manera o altra, m'han acompanyat "
+         "durant aquest camí. Sense la seva ajuda, la seva paciència i els seus ànims aquest "
+         "treball no hauria estat possible, i és per això que vull dedicar-los aquestes "
+         "primeres línies amb el meu agraïment més sincer.")
     para(doc,
          "En primer lloc, vull donar les gràcies als meus tutors, el Dr. José Antonio "
          "Martínez Casasnovas (Universitat de Lleida) i el Dr. Joaquim Bellvert (IRTA), per "
@@ -309,22 +311,22 @@ def build():
          "fonamentals per donar forma i rigor a aquest projecte.")
     para(doc,
          "Vull agrair molt especialment a tot l'equip del Programa d'Ús Eficient de l'Aigua "
-         "en Agricultura de l'IRTA l'acollida i el suport rebuts durant la part experimental. "
-         "De manera particular, agraeixo a en Víctor Blanco, la Nerea Gutiérrez, la Mercè "
-         "Mata, en Carles Paris, l'Aurica Biru i en Joan Girona la seva disponibilitat, els "
-         "seus consells i la seva ajuda en el treball de camp i en la comprensió de l'assaig "
-         "de maneig de capçada en què s'emmarca aquest TFM.")
+         "de l'IRTA l'acollida i el suport rebuts durant la part experimental. De manera "
+         "particular, agraeixo a en Joaquim Bellvert (cap de programa) i a en Víctor Blanco "
+         "(investigador) la seva disponibilitat i els seus consells i, sobretot, als meus "
+         "companys i companyes, per la seva ajuda en el treball de camp i per haver-me fet "
+         "entendre, des de dins, l'assaig de maneig de capçada en què s'emmarca aquest TFM.")
     para(doc,
-         "Faig extensiu aquest agraïment al personal de la finca experimental i a totes les "
-         "persones que, d'una manera o altra, han participat en les tasques d'assaig, mesura "
-         "i processament de dades, així com a la Universitat de Lleida i a l'Escola Tècnica "
-         "Superior d'Enginyeria Agroalimentària i Forestal i de Veterinària per la formació "
-         "rebuda durant aquests anys.")
+         "També vull tenir un record per a la Universitat de Lleida i, en especial, per a "
+         "l'Escola Tècnica Superior d'Enginyeria Agroalimentària i Forestal i de Veterinària, "
+         "on he crescut aquests anys tant a nivell acadèmic com personal, i per als "
+         "professors i companys de màster que han fet d'aquesta etapa una experiència que "
+         "recordaré amb afecte.")
     para(doc,
-         "Finalment, però no per això menys important, vull donar les gràcies a la meva "
-         "família i als meus amics pel seu suport incondicional, la seva paciència i els seus "
-         "ànims al llarg de tot aquest camí.")
-    para(doc, "A tots vosaltres, moltes gràcies.", italic=True)
+         "I, finalment, el més important de tot: gràcies a la meva família i als meus amics. "
+         "Gràcies per ser-hi sempre, per la paciència en els moments difícils i per creure en "
+         "mi fins i tot quan a mi em costava. Aquest treball també és una mica vostre.")
+    para(doc, "A tots vosaltres, de tot cor, moltes gràcies.", italic=True)
     doc.add_page_break()
 
     # ---------------- RESUM (CAT) ----------------
