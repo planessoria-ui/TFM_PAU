@@ -590,9 +590,11 @@ def build():
     add_figure(doc, "fig1_tseb.png",
                "Esquema del balanç d'energia de la superfície i de la partició de fluxos "
                "entre el sòl i el dosser en què es fonamenta el model de balanç energètic de "
-               "dues fonts (TSEB). Rn: radiació neta; G: flux de calor al sòl; H: calor "
-               "sensible; LE: calor latent (LEc del dosser i LEs del sòl); Tc i Ts: "
-               "temperatures de dosser i de sòl.",
+               "dues fonts (TSEB). Rn: radiació neta; G: flux de calor cap al sòl; H: calor "
+               "sensible, amb les seves components del dosser (Hc) i del sòl (Hs); LE: calor "
+               "latent, amb les components de transpiració del dosser (LEc) i d'evaporació "
+               "del sòl (LEs); Tc i Ts: temperatures de dosser i de sòl. Els subíndexs c i s "
+               "indiquen, respectivament, dosser (canopy) i sòl (soil).",
                "elaboració pròpia a partir de Norman et al. (1995) i Kustas i Norman (1999).",
                width_cm=13.5)
 

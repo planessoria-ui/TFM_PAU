@@ -21,47 +21,72 @@ DPI = 200
 
 
 def fig1_tseb():
-    fig, ax = plt.subplots(figsize=(7.2, 4.6))
-    ax.set_xlim(0, 10); ax.set_ylim(0, 7); ax.axis('off')
-    # Sòl
-    ax.add_patch(mpatches.Rectangle((0, 0), 10, 1.4, color='#caa472'))
-    ax.text(0.2, 0.55, 'SÒL', fontsize=10, weight='bold', color='#5c3d1a')
-    # Dosser (vegetació)
-    ax.add_patch(mpatches.Ellipse((5, 3.0), 3.6, 2.4, color='#3a7d34', alpha=0.85))
-    ax.text(5, 3.0, 'DOSSER', ha='center', va='center', color='white', weight='bold')
-    # Sol
-    ax.add_patch(mpatches.Circle((1.2, 6.2), 0.5, color='#f2b21a'))
-    ax.text(1.2, 6.2, '☼', ha='center', va='center', fontsize=14)
-    # Rn (radiació neta) cap avall
-    ax.add_patch(FancyArrowPatch((1.6, 5.9), (2.6, 4.4), arrowstyle='-|>',
-                 mutation_scale=18, color='#d9a300', lw=2))
-    ax.text(1.5, 5.2, 'Rn', color='#a37b00', weight='bold')
-    # Fluxos del dosser: H i LE (transpiració)
-    ax.add_patch(FancyArrowPatch((5.6, 4.0), (6.6, 5.6), arrowstyle='-|>',
-                 mutation_scale=16, color='#c0392b', lw=2))
-    ax.text(6.7, 5.4, 'Hc', color='#c0392b', weight='bold')
-    ax.add_patch(FancyArrowPatch((4.4, 4.0), (3.4, 5.6), arrowstyle='-|>',
-                 mutation_scale=16, color='#1f6fb2', lw=2))
-    ax.text(2.9, 5.4, 'LEc\n(transpiració)', color='#1f6fb2', weight='bold',
-            ha='center', fontsize=9)
-    # Fluxos del sòl: Hs, LEs (evaporació), G
-    ax.add_patch(FancyArrowPatch((8.2, 1.5), (8.8, 3.0), arrowstyle='-|>',
-                 mutation_scale=14, color='#e67e22', lw=2))
-    ax.text(8.9, 2.6, 'Hs', color='#e67e22', weight='bold')
-    ax.add_patch(FancyArrowPatch((7.4, 1.5), (7.0, 3.0), arrowstyle='-|>',
-                 mutation_scale=14, color='#2980b9', lw=2))
-    ax.text(6.3, 2.6, 'LEs\n(evaporació)', color='#2980b9', weight='bold',
-            ha='center', fontsize=9)
-    ax.add_patch(FancyArrowPatch((9.0, 1.2), (9.0, 0.3), arrowstyle='-|>',
-                 mutation_scale=14, color='#7f5539', lw=2))
-    ax.text(9.15, 0.6, 'G', color='#7f5539', weight='bold')
-    # Temperatures
-    ax.text(5, 1.9, 'Tc', ha='center', color='white', fontsize=10, weight='bold')
-    ax.text(2.0, 1.0, 'Ts', ha='center', color='#5c3d1a', fontsize=10, weight='bold')
-    # Equació
-    ax.text(5, 6.6, 'Rn = G + H + LE        (LE = LEc + LEs)',
-            ha='center', fontsize=12, weight='bold')
-    fig.tight_layout()
+    C_RN = '#e0a500'; C_LE = '#1f6fb2'; C_H = '#c0392b'; C_G = '#7f5539'
+    C_SOIL = '#cdab77'; C_CAN = '#3a7d34'
+    fig, ax = plt.subplots(figsize=(9.2, 6.0))
+    ax.set_xlim(0, 13); ax.set_ylim(0, 9); ax.axis('off')
+
+    # --- Equacions (capçalera) ---
+    ax.text(6.5, 8.5, 'Rn = G + H + LE', ha='center', fontsize=15, weight='bold')
+    ax.text(6.5, 7.95, 'H = Hc + Hs           LE = LEc + LEs',
+            ha='center', fontsize=12, color='#333333')
+
+    # --- Sòl ---
+    ax.add_patch(mpatches.Rectangle((0, 0), 13, 1.7, color=C_SOIL))
+    ax.text(0.35, 0.95, 'SÒL', fontsize=11, weight='bold', color='#5c3d1a')
+    ax.text(0.35, 0.45, '(Ts)', fontsize=9.5, color='#5c3d1a')
+
+    # --- Dosser ---
+    ax.add_patch(mpatches.Ellipse((5.3, 3.7), 4.4, 2.6, color=C_CAN, alpha=0.9))
+    ax.text(5.3, 3.95, 'DOSSER', ha='center', va='center', color='white',
+            weight='bold', fontsize=12)
+    ax.text(5.3, 3.3, '(Tc)', ha='center', va='center', color='white', fontsize=10)
+
+    # --- Sol ---
+    ax.add_patch(mpatches.Circle((1.15, 7.35), 0.62, color='#f2b21a'))
+    ax.text(1.15, 7.35, '☼', ha='center', va='center', fontsize=17)
+
+    # --- Rn: radiació neta (entrada d'energia) ---
+    ax.add_patch(FancyArrowPatch((1.7, 6.85), (3.15, 5.15), arrowstyle='-|>',
+                 mutation_scale=22, color=C_RN, lw=3))
+    ax.text(1.75, 5.9, 'Rn', color='#a37b00', weight='bold', fontsize=13)
+
+    # --- Fluxos del DOSSER (subíndex c) ---
+    # LEc transpiració (amunt-esquerra, blau)
+    ax.add_patch(FancyArrowPatch((4.2, 5.05), (2.95, 6.95), arrowstyle='-|>',
+                 mutation_scale=20, color=C_LE, lw=2.6))
+    ax.text(2.55, 7.15, 'LEc', color=C_LE, weight='bold', fontsize=13, ha='center')
+    ax.text(2.55, 6.75, 'transpiració', color=C_LE, fontsize=9.5, ha='center', style='italic')
+    # Hc sensible del dosser (amunt-dreta, vermell)
+    ax.add_patch(FancyArrowPatch((6.5, 5.05), (7.75, 6.95), arrowstyle='-|>',
+                 mutation_scale=20, color=C_H, lw=2.6))
+    ax.text(8.15, 7.15, 'Hc', color=C_H, weight='bold', fontsize=13, ha='center')
+    ax.text(8.15, 6.75, 'calor sensible\ndel dosser', color=C_H, fontsize=8.5,
+            ha='center', style='italic')
+
+    # --- Fluxos del SÒL (subíndex s), a la dreta del dosser ---
+    # LEs evaporació (blau)
+    ax.add_patch(FancyArrowPatch((9.6, 1.8), (9.6, 3.7), arrowstyle='-|>',
+                 mutation_scale=18, color=C_LE, lw=2.4))
+    ax.text(9.6, 4.55, 'LEs', color=C_LE, weight='bold', fontsize=12, ha='center')
+    ax.text(9.6, 4.1, 'evaporació', color=C_LE, fontsize=8.5, ha='center', style='italic')
+    # Hs sensible del sòl (taronja)
+    ax.add_patch(FancyArrowPatch((11.1, 1.8), (11.1, 3.7), arrowstyle='-|>',
+                 mutation_scale=18, color='#e67e22', lw=2.4))
+    ax.text(11.1, 4.55, 'Hs', color='#e67e22', weight='bold', fontsize=12, ha='center')
+    ax.text(11.1, 4.05, 'calor sensible\ndel sòl', color='#e67e22', fontsize=8.5,
+            ha='center', style='italic')
+    # G flux de calor cap al sòl (avall)
+    ax.add_patch(FancyArrowPatch((12.4, 1.55), (12.4, 0.35), arrowstyle='-|>',
+                 mutation_scale=18, color=C_G, lw=2.4))
+    ax.text(12.4, 0.95, 'G', color=C_G, weight='bold', fontsize=12, ha='left')
+    ax.text(12.15, 1.75, 'flux al sòl', color=C_G, fontsize=8.5, ha='center', style='italic')
+
+    # --- Llegenda de subíndexs ---
+    ax.text(6.5, 0.35, 'Subíndexs:  c = dosser (canopy)   ·   s = sòl (soil)',
+            ha='center', fontsize=9.5, color='#444444',
+            bbox=dict(boxstyle='round,pad=0.3', fc='white', ec='#bbbbbb'))
+
     fig.savefig(os.path.join(OUT, 'fig1_tseb.png'), dpi=DPI, bbox_inches='tight')
     plt.close(fig)
 
