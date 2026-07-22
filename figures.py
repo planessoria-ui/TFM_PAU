@@ -22,68 +22,67 @@ DPI = 200
 
 def fig1_tseb():
     C_RN = '#e0a500'; C_LE = '#1f6fb2'; C_H = '#c0392b'; C_G = '#7f5539'
-    C_SOIL = '#cdab77'; C_CAN = '#3a7d34'
-    fig, ax = plt.subplots(figsize=(9.2, 6.0))
-    ax.set_xlim(0, 13); ax.set_ylim(0, 9); ax.axis('off')
+    C_SOIL = '#cdab77'; C_CAN = '#3a7d34'; C_HS = '#e67e22'
+    fig, ax = plt.subplots(figsize=(10.0, 6.4))
+    ax.set_xlim(0, 14); ax.set_ylim(0, 10); ax.axis('off')
 
     # --- Equacions (capçalera) ---
-    ax.text(6.5, 8.5, 'Rn = G + H + LE', ha='center', fontsize=15, weight='bold')
-    ax.text(6.5, 7.95, 'H = Hc + Hs           LE = LEc + LEs',
+    ax.text(7.0, 9.5, 'Rn = G + H + LE', ha='center', fontsize=15, weight='bold')
+    ax.text(7.0, 8.95, 'H = Hc + Hs           LE = LEc + LEs',
             ha='center', fontsize=12, color='#333333')
 
     # --- Sòl ---
-    ax.add_patch(mpatches.Rectangle((0, 0), 13, 1.7, color=C_SOIL))
+    ax.add_patch(mpatches.Rectangle((0, 0), 14, 1.7, color=C_SOIL))
     ax.text(0.35, 0.95, 'SÒL', fontsize=11, weight='bold', color='#5c3d1a')
     ax.text(0.35, 0.45, '(Ts)', fontsize=9.5, color='#5c3d1a')
 
-    # --- Dosser ---
-    ax.add_patch(mpatches.Ellipse((5.3, 3.7), 4.4, 2.6, color=C_CAN, alpha=0.9))
-    ax.text(5.3, 3.95, 'DOSSER', ha='center', va='center', color='white',
+    # --- Dosser ---  centre (5.0, 3.6), amplada 4.0, alçada 2.4  -> top 4.8
+    ax.add_patch(mpatches.Ellipse((5.0, 3.6), 4.0, 2.4, color=C_CAN, alpha=0.9))
+    ax.text(5.0, 3.85, 'DOSSER', ha='center', va='center', color='white',
             weight='bold', fontsize=12)
-    ax.text(5.3, 3.3, '(Tc)', ha='center', va='center', color='white', fontsize=10)
+    ax.text(5.0, 3.25, '(Tc)', ha='center', va='center', color='white', fontsize=10)
 
     # --- Sol ---
-    ax.add_patch(mpatches.Circle((1.15, 7.35), 0.62, color='#f2b21a'))
-    ax.text(1.15, 7.35, '☼', ha='center', va='center', fontsize=17)
+    ax.add_patch(mpatches.Circle((1.05, 8.05), 0.6, color='#f2b21a'))
+    ax.text(1.05, 8.05, '☼', ha='center', va='center', fontsize=16)
 
-    # --- Rn: radiació neta (entrada d'energia) ---
-    ax.add_patch(FancyArrowPatch((1.7, 6.85), (3.15, 5.15), arrowstyle='-|>',
+    # --- Rn: radiació neta (fletxa curta, ben separada del text) ---
+    ax.add_patch(FancyArrowPatch((1.65, 7.5), (2.9, 5.6), arrowstyle='-|>',
                  mutation_scale=22, color=C_RN, lw=3))
-    ax.text(1.75, 5.9, 'Rn', color='#a37b00', weight='bold', fontsize=13)
+    ax.text(1.35, 6.4, 'Rn', color='#a37b00', weight='bold', fontsize=13, ha='right')
 
-    # --- Fluxos del DOSSER (subíndex c) ---
+    # --- Fluxos del DOSSER (subíndex c) : fletxes acaben a 6.0, text a partir de 6.5 ---
     # LEc transpiració (amunt-esquerra, blau)
-    ax.add_patch(FancyArrowPatch((4.2, 5.05), (2.95, 6.95), arrowstyle='-|>',
+    ax.add_patch(FancyArrowPatch((4.05, 4.65), (3.35, 6.0), arrowstyle='-|>',
                  mutation_scale=20, color=C_LE, lw=2.6))
-    ax.text(2.55, 7.15, 'LEc', color=C_LE, weight='bold', fontsize=13, ha='center')
-    ax.text(2.55, 6.75, 'transpiració', color=C_LE, fontsize=9.5, ha='center', style='italic')
+    ax.text(3.25, 6.95, 'LEc', color=C_LE, weight='bold', fontsize=13, ha='center')
+    ax.text(3.25, 6.55, 'transpiració', color=C_LE, fontsize=9.5, ha='center', style='italic')
     # Hc sensible del dosser (amunt-dreta, vermell)
-    ax.add_patch(FancyArrowPatch((6.5, 5.05), (7.75, 6.95), arrowstyle='-|>',
+    ax.add_patch(FancyArrowPatch((5.95, 4.65), (6.65, 6.0), arrowstyle='-|>',
                  mutation_scale=20, color=C_H, lw=2.6))
-    ax.text(8.15, 7.15, 'Hc', color=C_H, weight='bold', fontsize=13, ha='center')
-    ax.text(8.15, 6.75, 'calor sensible\ndel dosser', color=C_H, fontsize=8.5,
+    ax.text(6.75, 6.95, 'Hc', color=C_H, weight='bold', fontsize=13, ha='center')
+    ax.text(6.75, 6.55, 'calor sensible del dosser', color=C_H, fontsize=8.5,
             ha='center', style='italic')
 
     # --- Fluxos del SÒL (subíndex s), a la dreta del dosser ---
-    # LEs evaporació (blau)
-    ax.add_patch(FancyArrowPatch((9.6, 1.8), (9.6, 3.7), arrowstyle='-|>',
+    # fletxes verticals acaben a 3.4 ; text a partir de 3.9
+    ax.add_patch(FancyArrowPatch((9.8, 1.8), (9.8, 3.4), arrowstyle='-|>',
                  mutation_scale=18, color=C_LE, lw=2.4))
-    ax.text(9.6, 4.55, 'LEs', color=C_LE, weight='bold', fontsize=12, ha='center')
-    ax.text(9.6, 4.1, 'evaporació', color=C_LE, fontsize=8.5, ha='center', style='italic')
-    # Hs sensible del sòl (taronja)
-    ax.add_patch(FancyArrowPatch((11.1, 1.8), (11.1, 3.7), arrowstyle='-|>',
-                 mutation_scale=18, color='#e67e22', lw=2.4))
-    ax.text(11.1, 4.55, 'Hs', color='#e67e22', weight='bold', fontsize=12, ha='center')
-    ax.text(11.1, 4.05, 'calor sensible\ndel sòl', color='#e67e22', fontsize=8.5,
+    ax.text(9.8, 4.35, 'LEs', color=C_LE, weight='bold', fontsize=12, ha='center')
+    ax.text(9.8, 3.95, 'evaporació', color=C_LE, fontsize=8.5, ha='center', style='italic')
+    ax.add_patch(FancyArrowPatch((11.6, 1.8), (11.6, 3.4), arrowstyle='-|>',
+                 mutation_scale=18, color=C_HS, lw=2.4))
+    ax.text(11.6, 4.35, 'Hs', color=C_HS, weight='bold', fontsize=12, ha='center')
+    ax.text(11.6, 3.95, 'calor sensible del sòl', color=C_HS, fontsize=8.5,
             ha='center', style='italic')
-    # G flux de calor cap al sòl (avall)
-    ax.add_patch(FancyArrowPatch((12.4, 1.55), (12.4, 0.35), arrowstyle='-|>',
+    # G flux de calor cap al sòl (avall, dins del sòl)
+    ax.add_patch(FancyArrowPatch((13.3, 1.5), (13.3, 0.4), arrowstyle='-|>',
                  mutation_scale=18, color=C_G, lw=2.4))
-    ax.text(12.4, 0.95, 'G', color=C_G, weight='bold', fontsize=12, ha='left')
-    ax.text(12.15, 1.75, 'flux al sòl', color=C_G, fontsize=8.5, ha='center', style='italic')
+    ax.text(13.05, 0.95, 'G', color=C_G, weight='bold', fontsize=12, ha='right')
+    ax.text(13.3, 1.9, 'flux al sòl', color=C_G, fontsize=8.5, ha='center', style='italic')
 
     # --- Llegenda de subíndexs ---
-    ax.text(6.5, 0.35, 'Subíndexs:  c = dosser (canopy)   ·   s = sòl (soil)',
+    ax.text(4.6, 0.45, 'Subíndexs:  c = dosser (canopy)   ·   s = sòl (soil)',
             ha='center', fontsize=9.5, color='#444444',
             bbox=dict(boxstyle='round,pad=0.3', fc='white', ec='#bbbbbb'))
 
