@@ -1,256 +1,204 @@
 # -*- coding: utf-8 -*-
 """
-Genera el full de càlcul del calendari de maneig de la campanya 2026 i la
-figura del calendari per al TFM, a partir de la infografia de l'assaig.
+Calendari de maneig de la campanya 2026.
 
 Sortides:
-  calendari_maneig_2026.xlsx   full editable amb les dades i un gràfic natiu
-  figures/fig17_calendari.png  figura sòbria per al document
+  figures/fig17_calendari.png   figura completa per al TFM
+  calendari_maneig_2026.xlsx    full editable amb les dades i un gràfic natiu
+  calendari_maneig_2026.pptx    versió editable en diapositiva
+
+Color: les dues magnituds ordinals porten rampa d'un sol to, validades amb
+l'script del mètode de visualització (monotonia de lluminositat, salt entre
+passos i contrast de l'extrem clar). Les files d'identitat porten to
+categòric i van sempre etiquetades, de manera que el color no és l'únic
+portador del significat.
 """
 import os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch
+from matplotlib.patches import FancyBboxPatch, Rectangle
 from PIL import Image
-
-import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-from openpyxl.chart import BarChart, Reference
-from openpyxl.utils import get_column_letter
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 FIGDIR = os.path.join(BASE, "figures")
 os.makedirs(FIGDIR, exist_ok=True)
 
 MESOS = ["Març", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre"]
-NSET = 32  # 8 mesos x 4 setmanes
+NSET = 32
 
-# índex de setmana (0-31) dels esdeveniments
-BROTACIO, PODA, VEROLAT, DESFULLAT = 3, 12, 18, 18
+BROTACIO, DESBROT, VEROLAT, DESFULLAT = 3, 12, 18, 18
 VEREMA = (23, 26)
-VOLS = [("1r vol\n03/06", 12), ("2n vol\n30/06", 15),
-        ("3r vol\n22/07", 19), ("4t vol\n12/08", 21)]
-KC_SPAN, KC = (8, 27), 0.45
+VOLS = [("03/06", 12), ("30/06", 15), ("22/07", 19), ("12/08", 21)]
+KC_SPAN, KC = (8, 27), "0,45"
 REG = [((8, 18), "100 %"), ((19, 26), "25 %"), ((27, 27), "100 %")]
+TRACT = [("SE", "Sense esporga", 1.4),
+         ("EL", "Esporga lleugera", 1.1),
+         ("EM", "Esporga mitjana", 1.0),
+         ("ES", "Esporga severa", 0.7),
+         ("ES+DV", "Esporga severa + desfullat", 0.7)]
 
-TRACT = [("Sense esporga (C)", 1.0, 1.4, 0.365),
-         ("Esporga lleugera (ELL)", 1.0, 1.1, 0.319),
-         ("Esporga mitjana (EM)", 1.0, 1.0, 0.243),
-         ("Esporga severa (ES)", 1.0, 0.7, 0.178),
-         ("Esporga severa + desfullat (ES+DV)", 1.0, 0.7, 0.171)]
+INK, MUTED, RULE, FILL = "#1a2230", "#52514e", "#d4d7dc", "#f4f6f8"
+C_FEN, C_TAS, C_KC = "#1baf7a", "#6250d6", "#3d4451"
+KR_RAMP = {0.7: ("#e7a384", INK), 1.0: ("#d9825a", INK),
+           1.1: ("#c56437", "white"), 1.4: ("#9e441b", "white")}
+REG_RAMP = {"25 %": ("#86b6ef", INK), "100 %": ("#1c5cab", "white")}
 
-# ---------------------------------------------------------------------------
-# Full de càlcul
-# ---------------------------------------------------------------------------
-INK = "1A2230"
-HEAD = PatternFill("solid", fgColor="1F5C8B")
-SUB = PatternFill("solid", fgColor="E8EDF2")
-THIN = Side(style="thin", color="C8CDD4")
-BOX = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
-FILLS = {"fen": "1BAF7A", "tasca": "EB6834", "vol": "2A78D6",
-         "kc": "1F5C8B", "reg1": "6250D6", "reg2": "BCB6EE", "kr": "C98E7A"}
+plt.rcParams.update({"font.family": "DejaVu Sans", "text.color": INK})
 
-wb = openpyxl.Workbook()
-
-# -- full 1: calendari setmanal ---------------------------------------------
-ws = wb.active
-ws.title = "Calendari"
-ws["A1"] = "Calendari de maneig de la vinya · campanya 2026"
-ws["A1"].font = Font(name="Calibri", size=14, bold=True, color=INK)
-ws["A2"] = ("Assaig ADAPTEX de maneig de capçada · parcel·la El polvorín (Raimat). "
-            "Setmanes de març a octubre.")
-ws["A2"].font = Font(name="Calibri", size=10, italic=True, color="5B6675")
-
-R0 = 4                      # fila de la capçalera de mesos
-C0 = 3                      # primera columna de setmana
-ws.column_dimensions["A"].width = 34
-ws.column_dimensions["B"].width = 10
-for i in range(NSET):
-    ws.column_dimensions[get_column_letter(C0 + i)].width = 4.2
-
-for m, mes in enumerate(MESOS):
-    c = C0 + m * 4
-    ws.merge_cells(start_row=R0, start_column=c, end_row=R0, end_column=c + 3)
-    cell = ws.cell(R0, c, mes)
-    cell.font = Font(name="Calibri", size=10, bold=True, color="FFFFFF")
-    cell.fill = HEAD
-    cell.alignment = Alignment(horizontal="center")
-    for s in range(4):
-        x = ws.cell(R0 + 1, c + s, s + 1)
-        x.font = Font(name="Calibri", size=9, color="5B6675")
-        x.alignment = Alignment(horizontal="center")
-        x.fill = SUB
-ws.cell(R0, 1, "Concepte").font = Font(name="Calibri", size=10, bold=True, color="FFFFFF")
-ws.cell(R0, 1).fill = HEAD
-ws.cell(R0, 2, "Valor").font = Font(name="Calibri", size=10, bold=True, color="FFFFFF")
-ws.cell(R0, 2).fill = HEAD
-
-
-def banda(row, label, valor, spans, color, text=None):
-    c = ws.cell(row, 1, label)
-    c.font = Font(name="Calibri", size=10, bold=True, color=INK)
-    v = ws.cell(row, 2, valor)
-    v.font = Font(name="Calibri", size=10, color=INK)
-    v.alignment = Alignment(horizontal="center")
-    for i in range(NSET):
-        ws.cell(row, C0 + i).border = BOX
-    for a, b in spans:
-        for i in range(a, b + 1):
-            ws.cell(row, C0 + i).fill = PatternFill("solid", fgColor=color)
-        if text:
-            t = ws.cell(row, C0 + a, text)
-            t.font = Font(name="Calibri", size=9, bold=True, color="FFFFFF")
-
-
-r = R0 + 2
-banda(r, "Fenologia · brotació", "Març, s4", [(BROTACIO, BROTACIO)], FILLS["fen"]); r += 1
-banda(r, "Fenologia · verolat", "Juliol, s3", [(VEROLAT, VEROLAT)], FILLS["fen"]); r += 1
-banda(r, "Tasca · esporga (poda en verd)", "Juny, s1", [(PODA, PODA)], FILLS["tasca"]); r += 1
-banda(r, "Tasca · desfullat (només ES+DV)", "Juliol, s3", [(DESFULLAT, DESFULLAT)], FILLS["tasca"]); r += 1
-banda(r, "Tasca · verema", "Ago. s4 – set. s3", [VEREMA], FILLS["tasca"]); r += 1
-for lab, i in VOLS:
-    banda(r, "Vol de dron · " + lab.replace("\n", " "), lab.split("\n")[1],
-          [(i, i)], FILLS["vol"]); r += 1
-banda(r, "Kc · coeficient de cultiu", KC, [KC_SPAN], FILLS["kc"], str(KC).replace(".", ",")); r += 1
-for lab, kr_maig, kr_resta, _ in TRACT:
-    banda(r, "Kr · " + lab, kr_resta, [(8, 11), (12, 27)], FILLS["kr"])
-    ws.cell(r, C0 + 8, str(kr_maig).replace(".", ",")).font = Font(size=9, bold=True, color="FFFFFF")
-    ws.cell(r, C0 + 12, str(kr_resta).replace(".", ",")).font = Font(size=9, bold=True, color="FFFFFF")
-    r += 1
-for (a, b), txt in REG:
-    banda(r, "Reg aplicat", txt, [(a, b)],
-          FILLS["reg1"] if txt == "100 %" else FILLS["reg2"], txt)
-    r += 1
-
-r += 1
-ws.cell(r, 1, "Kc = coeficient de cultiu · Kr = coeficient de reducció per capçada · "
-              "el 25 % correspon al reg deficitari controlat des del verolat.").font = \
-    Font(name="Calibri", size=9, italic=True, color="5B6675")
-
-# -- full 2: Kc, Kr i reg ----------------------------------------------------
-ws2 = wb.create_sheet("Kc_Kr_Reg")
-ws2["A1"] = "Coeficients de reg per tractament · campanya 2026"
-ws2["A1"].font = Font(name="Calibri", size=13, bold=True, color=INK)
-hdr = ["Tractament", "Kc", "Kr (maig)", "Kr (juny–setembre)",
-       "Reg fins al verolat", "Reg des del verolat",
-       "fc mitjana mesurada", "fc relativa a EM"]
-for j, h in enumerate(hdr, start=1):
-    c = ws2.cell(3, j, h)
-    c.font = Font(name="Calibri", size=10, bold=True, color="FFFFFF")
-    c.fill = HEAD
-    c.alignment = Alignment(horizontal="center", wrap_text=True)
-ws2.column_dimensions["A"].width = 34
-for j in range(2, 9):
-    ws2.column_dimensions[get_column_letter(j)].width = 15
-ref_fc = TRACT[2][3]
-for i, (lab, kr_m, kr_r, fc) in enumerate(TRACT):
-    row = 4 + i
-    for j, v in enumerate([lab, KC, kr_m, kr_r, "100 %", "25 %",
-                           round(fc, 3), round(fc / ref_fc, 2)], start=1):
-        c = ws2.cell(row, j, v)
-        c.font = Font(name="Calibri", size=10, color=INK)
-        c.alignment = Alignment(horizontal="left" if j == 1 else "center")
-        c.border = BOX
-
-ch = BarChart()
-ch.type = "col"
-ch.style = 2
-ch.title = "Kr aplicat i fracció de coberta relativa (EM = 1)"
-ch.y_axis.title = "Valor"
-ch.height, ch.width = 8.5, 18
-ch.add_data(Reference(ws2, min_col=4, min_row=3, max_row=8), titles_from_data=True)
-ch.add_data(Reference(ws2, min_col=8, min_row=3, max_row=8), titles_from_data=True)
-ch.set_categories(Reference(ws2, min_col=1, min_row=4, max_row=8))
-ws2.add_chart(ch, "A11")
-
-ws2.cell(32, 1, "La fracció de coberta prové de la mitjana dels quatre vols de 2026 "
-                "(Taula 14 del TFM). La correlació entre Kr i fc relativa és r² = 0,96.").font = \
-    Font(name="Calibri", size=9, italic=True, color="5B6675")
-
-OUTX = os.path.join(BASE, "calendari_maneig_2026.xlsx")
-wb.save(OUTX)
-print("calendari_maneig_2026.xlsx")
-
-# ---------------------------------------------------------------------------
-# Figura per al document
-# ---------------------------------------------------------------------------
-C_FEN, C_TAS, C_VOL, C_REG, C_RDC = "#1baf7a", "#eb6834", "#2a78d6", "#6250d6", "#bcb6ee"
-TINK, MUTED, RULE, FILL = "#1a2230", "#5b6675", "#d4d7dc", "#f4f6f8"
-plt.rcParams.update({"font.family": "DejaVu Sans", "text.color": TINK})
-
-fig, ax = plt.subplots(figsize=(9.6, 3.9))
-ax.set_xlim(-0.4, NSET + 0.4)
-ax.set_ylim(-0.80, 5.4)
+fig, ax = plt.subplots(figsize=(10.6, 6.5))
+X0 = -11.2
+ax.set_xlim(X0, NSET + 0.3)
 ax.axis("off")
 
-ROWS = [("Reg aplicat", 0.55), ("Vols de dron", 1.55), ("Tasques", 2.55), ("Fenologia", 3.55)]
-H = 0.62
-for lab, y in ROWS:
-    ax.add_patch(FancyBboxPatch((0, y), NSET, H, boxstyle="square,pad=0",
-                                fc=FILL, ec=RULE, lw=0.7, zorder=1))
-    ax.text(-0.6, y + H / 2, lab, ha="right", va="center", fontsize=9.2,
-            weight="bold", color=TINK)
+H, HK = 0.70, 0.52
+y = 0.0
+rows = []                       # (clau, y)
+for key, h, gap in [("fen", H, 0.16), ("tas", H, 0.16), ("vol", H, 0.30),
+                    ("kc", H, 0.34)]:
+    y -= h
+    rows.append((key, y))
+    y -= gap
+y -= 0.76                       # espai per al títol del bloc Kr
+for code, _, _ in TRACT:
+    y -= HK
+    rows.append(("kr_" + code, y))
+    y -= 0.07
+y -= 0.30
+y -= H
+rows.append(("reg", y))
+BOTTOM = y
+POS = dict(rows)
+TOP = 0.55
+ax.set_ylim(BOTTOM - 1.95, TOP + 1.25)
 
-# capçalera de mesos
+
+def band(yy, h=H):
+    ax.add_patch(Rectangle((0, yy), NSET, h, fc=FILL, ec=RULE, lw=0.7, zorder=1))
+
+
+def label(yy, text, h=H, bold=True, size=9.4, sub=None):
+    ax.text(-0.5, yy + h / 2 + (0.11 if sub else 0), text, ha="right",
+            va="center", fontsize=size, weight="bold" if bold else "normal",
+            color=INK)
+    if sub:
+        ax.text(-0.5, yy + h / 2 - 0.15, sub, ha="right", va="center",
+                fontsize=7.6, color=MUTED)
+
+
+def chip(yy, a, b, fc, text="", tc="white", h=H, fs=8.2, r=0.10):
+    ax.add_patch(FancyBboxPatch((a, yy + 0.07), b - a + 1, h - 0.14,
+                                boxstyle=f"round,pad=0,rounding_size={r}",
+                                fc=fc, ec="white", lw=1.1, zorder=3))
+    if text:
+        ax.text((a + b + 1) / 2, yy + h / 2, text, ha="center", va="center",
+                fontsize=fs, weight="bold", color=tc, zorder=4)
+
+
+# --- capçalera de mesos i setmanes ----------------------------------------
 for m, mes in enumerate(MESOS):
     x = m * 4
-    ax.add_patch(FancyBboxPatch((x, 4.45), 4, 0.40, boxstyle="square,pad=0",
-                                fc="#eceff3" if m % 2 == 0 else "#f6f8fa",
-                                ec=RULE, lw=0.7, zorder=1))
-    ax.text(x + 2, 4.65, mes, ha="center", va="center", fontsize=8.8,
-            weight="bold", color=TINK)
+    ax.add_patch(Rectangle((x, TOP + 0.42), 4, 0.44,
+                           fc="#e9edf1" if m % 2 == 0 else "#f5f7f9",
+                           ec=RULE, lw=0.7, zorder=1))
+    ax.text(x + 2, TOP + 0.64, mes.upper(), ha="center", va="center",
+            fontsize=8.4, weight="bold", color=INK)
     for s in range(4):
-        ax.text(x + s + 0.5, 4.26, str(s + 1), ha="center", va="center",
+        ax.text(x + s + 0.5, TOP + 0.20, str(s + 1), ha="center", va="center",
                 fontsize=6.8, color=MUTED)
 for m in range(1, 8):
-    ax.plot([m * 4, m * 4], [0.4, 4.45], color=RULE, lw=0.7, zorder=0)
+    ax.plot([m * 4, m * 4], [BOTTOM, TOP + 0.42], color=RULE, lw=0.7, zorder=0)
 
+# --- fenologia -------------------------------------------------------------
+yy = POS["fen"]; band(yy); label(yy, "Fenologia")
+for idx, txt in ((BROTACIO, "Brotació"), (VEROLAT, "Verolat")):
+    chip(yy, idx, idx, C_FEN)
+    ax.text(idx + 1.35, yy + H / 2, txt, ha="left", va="center",
+            fontsize=8.4, color=INK)
 
-def marca(y, a, b, color, text, fs=8.0, tc="white"):
-    ax.add_patch(FancyBboxPatch((a, y + 0.06), b - a + 1, H - 0.12,
-                                boxstyle="round,pad=0,rounding_size=0.12",
-                                fc=color, ec="white", lw=1.0, zorder=3))
-    ax.text((a + b + 1) / 2, y + H / 2, text, ha="center", va="center",
-            fontsize=fs, weight="bold", color=tc, zorder=4)
+# --- tasques ---------------------------------------------------------------
+yy = POS["tas"]; band(yy); label(yy, "Operacions")
+chip(yy, DESBROT, DESBROT, C_TAS)
+ax.text(DESBROT - 0.35, yy + H / 2, "Desbrot i tall en altura", ha="right",
+        va="center", fontsize=8.4, color=INK)
+chip(yy, DESFULLAT, DESFULLAT, C_TAS)
+ax.text(DESFULLAT + 1.35, yy + H / 2, "Desfullat", ha="left", va="center",
+        fontsize=8.4, color=INK)
+chip(yy, *VEREMA, fc=C_TAS, text="Verema")
 
+# --- vols ------------------------------------------------------------------
+yy = POS["vol"]; band(yy); label(yy, "Vols de dron")
+for n, (dat, idx) in enumerate(VOLS, start=1):
+    chip(yy, idx, idx, INK, str(n), "white", fs=8.4, r=0.14)
+    ax.text(idx + 0.5, yy - 0.16, dat, ha="center", va="top", fontsize=7.2,
+            color=MUTED)
 
-marca(3.55, BROTACIO, BROTACIO, C_FEN, "")
-ax.text(BROTACIO + 1.3, 3.55 + H / 2, "Brotació", ha="left", va="center",
-        fontsize=8.4, color=TINK)
-marca(3.55, VEROLAT, VEROLAT, C_FEN, "")
-ax.text(VEROLAT + 1.3, 3.55 + H / 2, "Verolat", ha="left", va="center",
-        fontsize=8.4, color=TINK)
+# --- Kc --------------------------------------------------------------------
+yy = POS["kc"]; band(yy)
+label(yy, "Kc", sub="coeficient de cultiu")
+chip(yy, KC_SPAN[0], KC_SPAN[1], C_KC, KC)
 
-marca(2.55, PODA, PODA, C_TAS, "")
-ax.text(PODA + 1.3, 2.55 + H / 2, "Desbrot i tall en altura", ha="left",
-        va="center", fontsize=8.4, color=TINK)
-marca(2.55, DESFULLAT, DESFULLAT, C_TAS, "")
-ax.text(DESFULLAT + 1.3, 2.55 + H / 2, "Desfullat", ha="left", va="center",
-        fontsize=8.4, color=TINK)
-marca(2.55, VEREMA[0], VEREMA[1], C_TAS, "Verema")
+# --- Kr --------------------------------------------------------------------
+ytop = POS["kr_" + TRACT[0][0]] + HK
+ax.text(-0.5, ytop + 0.30, "Kr", ha="right", va="center", fontsize=9.4,
+        weight="bold", color=INK)
+ax.text(-0.5, ytop + 0.07, "coeficient de reducció per capçada",
+        ha="right", va="center", fontsize=7.6, color=MUTED)
+for code, nom, kr in TRACT:
+    yy = POS["kr_" + code]
+    band(yy, HK)
+    ax.text(-0.5, yy + HK / 2, f"{nom}  ({code})", ha="right", va="center",
+            fontsize=8.0, color=INK)
+    fc1, tc1 = KR_RAMP[1.0]
+    chip(yy, 8, 11, fc1, "1,0", tc1, h=HK, fs=7.6, r=0.08)
+    fc2, tc2 = KR_RAMP[kr]
+    chip(yy, 12, 27, fc2, str(kr).replace(".", ","), tc2, h=HK, fs=7.6, r=0.08)
 
-for n, (lab, i) in enumerate(VOLS, start=1):
-    marca(1.55, i, i, C_VOL, str(n), fs=8.6)
-
+# --- reg -------------------------------------------------------------------
+yy = POS["reg"]; band(yy)
+label(yy, "Reg aplicat", sub="fracció de la dosi")
 for (a, b), txt in REG:
-    wide = (b - a) >= 3
-    marca(0.55, a, b, C_REG if txt == "100 %" else C_RDC,
-          txt if wide else "", tc="white" if txt == "100 %" else TINK)
-    if not wide:
-        ax.text((a + b + 1) / 2, 0.55 + H + 0.1, txt, ha="center", va="bottom",
-                fontsize=7.6, color=TINK, weight="bold")
+    fc, tc = REG_RAMP[txt]
+    chip(yy, a, b, fc, txt if b - a >= 3 else "", tc)
+    if b - a < 3:
+        ax.text(b + 1.35, yy + H / 2, txt, ha="left", va="center",
+                fontsize=7.6, weight="bold", color=INK)
 
-ax.text(0, 0.10, "Vols de dron:  1 · 03/06    2 · 30/06    3 · 22/07    4 · 12/08",
-        ha="left", va="center", fontsize=8.0, color=TINK)
-ax.text(0, -0.22, "Desbrot i tall en altura: 02/06 · desfullat del tractament ES+DV: "
-                  "20/07, coincidint amb el verolat.",
-        ha="left", va="center", fontsize=7.8, color=MUTED)
-ax.text(0, -0.52, "Kc = 0,45 constant de maig a setembre. El 25 % correspon al reg "
-                  "deficitari controlat aplicat des del verolat.",
-        ha="left", va="center", fontsize=7.8, color=MUTED, style="italic")
+# --- llegenda i notes ------------------------------------------------------
+ly = BOTTOM - 0.55
+ax.text(0, ly, "Kr:", ha="left", va="center", fontsize=8.0, weight="bold",
+        color=INK)
+x = 1.6
+for kr in (0.7, 1.0, 1.1, 1.4):
+    fc, _ = KR_RAMP[kr]
+    ax.add_patch(FancyBboxPatch((x, ly - 0.16), 0.75, 0.32,
+                                boxstyle="round,pad=0,rounding_size=0.07",
+                                fc=fc, ec="white", lw=0.9))
+    ax.text(x + 1.0, ly, str(kr).replace(".", ","), ha="left", va="center",
+            fontsize=7.8, color=INK)
+    x += 2.0
+ax.text(x + 0.6, ly, "Reg:", ha="left", va="center", fontsize=8.0,
+        weight="bold", color=INK)
+x += 2.4
+for txt, desc, adv in (("100 %", "sense restricció", 9.2),
+                       ("25 %", "deficitari controlat", 0)):
+    fc, _ = REG_RAMP[txt]
+    ax.add_patch(FancyBboxPatch((x, ly - 0.16), 0.75, 0.32,
+                                boxstyle="round,pad=0,rounding_size=0.07",
+                                fc=fc, ec="white", lw=0.9))
+    ax.text(x + 1.0, ly, f"{txt}, {desc}", ha="left", va="center",
+            fontsize=7.8, color=INK)
+    x += adv
 
-fig.savefig(os.path.join(FIGDIR, "fig17_calendari.png"), dpi=220,
+for k, txt in enumerate([
+        "Desbrot i tall en altura el 02/06; desfullat del tractament ES+DV el 20/07, "
+        "coincidint amb el verolat.",
+        "El Kc es manté constant de la primera setmana de maig a l'última de setembre. "
+        "El reg deficitari controlat s'aplica des del verolat fins a la verema."]):
+    ax.text(0, BOTTOM - 1.05 - k * 0.33, txt, ha="left", va="center",
+            fontsize=7.6, color=MUTED)
+
+fig.savefig(os.path.join(FIGDIR, "fig17_calendari.png"), dpi=230,
             bbox_inches="tight", facecolor="white")
 plt.close(fig)
 print("fig17_calendari.png",
