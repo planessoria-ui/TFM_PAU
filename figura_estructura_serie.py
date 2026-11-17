@@ -25,13 +25,13 @@ F = [("03/06", dt.date(2026, 6, 3), "a290cdc2-biophysical_traits_YIELD4CAST2026_
      ("12/08", dt.date(2026, 8, 12), "9b33ef42-biophysical_traits_YIELD4CAST2026_covercrop_P25_12082026.csv")]
 SHORT = {"Esporga severa i desfullat a verolat": "ES+DV", "Esporga severa + desfullat": "ES+DV",
          "Esporga severa": "ES", "Esporga mitjana": "EM",
-         "Esporga lleugera": "ELL", "Sense esporga": "C"}
-ORDER = ["C", "ELL", "EM", "ES", "ES+DV"]
-LABEL = {"C": "Sense esporga", "ELL": "Esporga lleugera", "EM": "Esporga mitjana",
+         "Esporga lleugera": "EL", "Sense esporga": "SE"}
+ORDER = ["SE", "EL", "EM", "ES", "ES+DV"]
+LABEL = {"SE": "Sense esporga", "EL": "Esporga lleugera", "EM": "Esporga mitjana",
          "ES": "Esporga severa", "ES+DV": "Esporga severa + desfullat"}
 
 # paleta categòrica validada (slots 1-5) + marcadors com a codificació secundària
-SERIES = {"C": ("#2a78d6", "o"), "ELL": ("#eb6834", "s"), "EM": ("#1baf7a", "^"),
+SERIES = {"SE": ("#2a78d6", "o"), "EL": ("#eb6834", "s"), "EM": ("#1baf7a", "^"),
           "ES": ("#eda100", "D"), "ES+DV": ("#e87ba4", "v")}
 INK, MUTED, RULE = "#1a2230", "#52514e", "#d4d7dc"
 
