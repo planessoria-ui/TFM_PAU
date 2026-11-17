@@ -181,7 +181,7 @@ plt.rcParams.update({"font.family": "DejaVu Sans", "text.color": TINK})
 
 fig, ax = plt.subplots(figsize=(9.6, 3.9))
 ax.set_xlim(-0.4, NSET + 0.4)
-ax.set_ylim(-0.55, 5.4)
+ax.set_ylim(-0.80, 5.4)
 ax.axis("off")
 
 ROWS = [("Reg aplicat", 0.55), ("Vols de dron", 1.55), ("Tasques", 2.55), ("Fenologia", 3.55)]
@@ -223,8 +223,8 @@ ax.text(VEROLAT + 1.3, 3.55 + H / 2, "Verolat", ha="left", va="center",
         fontsize=8.4, color=TINK)
 
 marca(2.55, PODA, PODA, C_TAS, "")
-ax.text(PODA + 1.3, 2.55 + H / 2, "Esporga", ha="left", va="center",
-        fontsize=8.4, color=TINK)
+ax.text(PODA + 1.3, 2.55 + H / 2, "Desbrot i tall en altura", ha="left",
+        va="center", fontsize=8.4, color=TINK)
 marca(2.55, DESFULLAT, DESFULLAT, C_TAS, "")
 ax.text(DESFULLAT + 1.3, 2.55 + H / 2, "Desfullat", ha="left", va="center",
         fontsize=8.4, color=TINK)
@@ -243,7 +243,10 @@ for (a, b), txt in REG:
 
 ax.text(0, 0.10, "Vols de dron:  1 · 03/06    2 · 30/06    3 · 22/07    4 · 12/08",
         ha="left", va="center", fontsize=8.0, color=TINK)
-ax.text(0, -0.28, "Kc = 0,45 constant de maig a setembre. El 25 % correspon al reg "
+ax.text(0, -0.22, "Desbrot i tall en altura: 02/06 · desfullat del tractament ES+DV: "
+                  "20/07, coincidint amb el verolat.",
+        ha="left", va="center", fontsize=7.8, color=MUTED)
+ax.text(0, -0.52, "Kc = 0,45 constant de maig a setembre. El 25 % correspon al reg "
                   "deficitari controlat aplicat des del verolat.",
         ha="left", va="center", fontsize=7.8, color=MUTED, style="italic")
 
