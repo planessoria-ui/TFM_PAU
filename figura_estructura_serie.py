@@ -61,12 +61,16 @@ plt.rcParams.update({"font.family": "DejaVu Sans", "text.color": INK,
 fig, axes = plt.subplots(1, 2, figsize=(9.4, 4.3))
 days = [d for _, d, _ in F]
 
-for ax, var, ylab, ylim in [(axes[0], "fc", "Fracció de coberta (–)", (0.10, 0.46)),
-                            (axes[1], "hc", "Alçada del dosser (m)", (1.60, 2.55))]:
+for ax, var, ylab, ylim in [(axes[0], "fc", "Fracció de coberta (–)", (0.09, 0.48)),
+                            (axes[1], "hc", "Alçada del dosser (m)", (1.58, 2.60))]:
     for trt in ORDER:
         col, mk = SERIES[trt]
-        ys = [st.mean([r[var] for r in rows if r["day"] == d and r["trt"] == trt
-                       and r[var] is not None]) for d in days]
+        vals = [[r[var] for r in rows if r["day"] == d and r["trt"] == trt
+                 and r[var] is not None] for d in days]
+        ys = [st.mean(v) for v in vals]
+        sd = [st.pstdev(v) for v in vals]
+        ax.errorbar(days, ys, yerr=sd, fmt="none", ecolor=col, elinewidth=1.0,
+                    capsize=2.6, capthick=1.0, alpha=0.55, zorder=2)
         ax.plot(days, ys, color=col, lw=2.0, marker=mk, ms=7,
                 mec="white", mew=1.2, zorder=3, label=LABEL[trt], clip_on=False)
         ax.annotate(trt, xy=(days[-1], ys[-1]), xytext=(7, 0),
