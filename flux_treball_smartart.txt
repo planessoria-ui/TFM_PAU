@@ -1,0 +1,21 @@
+Text per al panell de text d’un SmartArt de Word
+(Insereix > SmartArt > Llista > Llista de blocs vertical; obre el panell de
+text amb la fletxa de l’esquerra i enganxa-hi les línies de sota. Les línies
+amb sagnat són el segon nivell.)
+
+Adquisició de dades
+	Vols de dron amb MicaSense Altum-PT (cinc bandes espectrals i banda tèrmica LWIR) i mesures de camp simultànies: ceptòmetre, potencial hídric de tija i meteorologia.
+Processament fotogramètric
+	Ortomosaics, model digital de superfície i del terreny, i model digital de vegetació amb l'alçada del dosser.
+Calibratge radiomètric
+	Correcció de les cinc bandes espectrals amb els panells de referència i de la banda tèrmica amb el termòmetre d'infraroig.
+Extracció de variables per cep
+	Màscares d'alçada i de SAVI, índexs de vegetació i paràmetres estructurals (fracció de coberta, alçada i volum de copa) sobre la capa de polígons.
+Estimació del LAI
+	Ceptòmetre i formulació de Campbell i Norman, validació amb ceps defoliats (R², RMSE) i extensió a tots els ceps mitjançant Random Forest.
+Temperatures de component
+	Temperatura de dosser (Tc) i de sòl (Ts) a partir de les màscares, amb retall de percentils per descartar els píxels barrejats.
+Model TSEB-2T
+	Formulació de Campbell i Norman per a cultius en filera; evapotranspiració real i partició entre transpiració i evaporació.
+Validació
+	Flux de saba, aigua de reg aplicada i potencial hídric de tija.
