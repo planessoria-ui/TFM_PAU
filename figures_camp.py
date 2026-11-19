@@ -73,3 +73,6 @@ op = lambda f: Image.open(os.path.join(SRC, f)).convert("RGB")
 dos_panells(op("22.jpg"), op("23.jpg"), "fig_calibratge_irt.png")
 dos_panells(op("24.jpg"), op("25.jpg"), "fig_lai_destructiu.png")
 un_panell(op("26.jpg"), "fig_gps_ceps.png")
+
+# abans i després del desfullat del tractament ES+DV
+dos_panells(op("27.jpg"), op("28.jpg"), "fig_desfullat_abans_despres.png")
