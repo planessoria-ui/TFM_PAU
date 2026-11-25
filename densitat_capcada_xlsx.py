@@ -244,6 +244,10 @@ bc.legend.position = "b"
 bc.legend.overlay = False
 wg.add_chart(bc, "A26")
 
+# els gràfics, a la primera pestanya, que és la que s'obre
+wb.move_sheet("Gràfics", offset=-1)
+wb.active = 0
+
 wb.save(OUT)
 print(f"{os.path.basename(OUT)} · {len(wg._charts)} gràfics natius")
 print()
